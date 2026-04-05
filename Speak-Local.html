@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SpeakLocal — Talk to Anyone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg0:#07090f;--bg1:#0d1018;--bg2:#141820;--bg3:#1c2230;--bg4:#242d3e;
+  --bdr:rgba(255,255,255,.06);--bdr2:rgba(255,255,255,.11);--bdr3:rgba(255,255,255,.20);
+  --tx0:#e8eef8;--tx1:#8a9ab8;--tx2:#4e5e78;--tx3:#2e3a50;
+  --b:#3b82f6;--b2:#2563eb;--b3:#1e40af;
+  --teal:#2dd4bf;--teal2:#0d9488;
+  --am:#fbbf24;--am2:#f59e0b;
+  --pu:#a78bfa;--pu2:#7c3aed;
+  --ro:#f87171;--gr:#4ade80;--or:#fb923c;
+  --r8:8px;--r12:12px;--r16:16px;--r20:20px;--r24:24px;
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--bg0);color:var(--tx0);display:flex;flex-direction:column;min-height:100%;overflow-x:hidden}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+a{color:var(--teal);text-decoration:none}
+.screen{display:none;flex-direction:column;flex:1}
+.screen.active{display:flex}
+
+/* ═══ SCREEN 0: WELCOME / KEYS ═══ */
+#s0{align-items:center;justify-content:flex-start;padding:0;min-height:100vh;overflow-y:auto;
+  background:radial-gradient(ellipse 120% 50% at 60% -10%,rgba(59,130,246,.12),transparent 60%),
+             radial-gradient(ellipse 80% 40% at 0% 80%,rgba(45,212,191,.07),transparent 55%)}
+.sw{width:100%;max-width:440px;padding:28px 18px 50px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:36px}
+.bmark{width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--b2),var(--teal2));
+  display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 16px rgba(59,130,246,.3)}
+.bname{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.bname em{font-style:normal;color:var(--teal)}
+h1.hero{font-size:28px;font-weight:800;letter-spacing:-.7px;line-height:1.18;margin-bottom:10px}
+h1.hero em{font-style:normal;background:linear-gradient(90deg,var(--b),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hsub{font-size:13.5px;color:var(--tx1);line-height:1.7;margin-bottom:22px}
+.free-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(45,212,191,.1);
+  border:1px solid rgba(45,212,191,.25);border-radius:20px;padding:5px 13px;
+  font-size:12px;font-weight:600;color:var(--teal);margin-bottom:18px}
+.fdot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:gp 2s ease-in-out infinite}
+@keyframes gp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.75)}}
+
+.field{margin-bottom:11px}
+.field label{display:block;font-size:10px;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
+.inp{width:100%;background:var(--bg2);border:1px solid var(--bdr2);border-radius:var(--r12);padding:11px 14px;color:var(--tx0);font-family:var(--font);font-size:14px;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--b)}.inp.mono{font-family:var(--mono);font-size:12px}.inp::placeholder{color:var(--tx3)}
+.hbox{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r12);padding:13px 14px;margin-bottom:14px}
+.hrow{display:flex;gap:8px;margin-bottom:9px;align-items:flex-start}.hrow:last-child{margin-bottom:0}
+.hnum{width:19px;height:19px;border-radius:50%;flex-shrink:0;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:var(--b);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.htx{font-size:12px;color:var(--tx1);line-height:1.6}
+.htx strong{color:var(--tx0);font-weight:600}
+.htx code{font-family:var(--mono);font-size:11px;background:var(--bg3);padding:1px 5px;border-radius:4px;color:var(--teal)}
+.paid-sec{display:none}
+.tgl-paid{font-size:12px;color:var(--tx2);text-align:center;margin-bottom:12px;cursor:pointer;text-decoration:underline}
+.quota-bar{display:flex;align-items:center;gap:7px;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r12);padding:9px 12px;margin-bottom:11px;font-size:12px}
+.qbi{font-size:13px}.qbf{flex:1}.qbl{color:var(--tx1);margin-bottom:3px}
+.qbt{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.qbfl{height:100%;border-radius:2px;transition:width .4s;background:var(--teal2)}
+.qbfl.warn{background:var(--am2)}.qbfl.over{background:var(--ro)}
+.qbc{color:var(--tx2);font-family:var(--mono);font-size:10px;white-space:nowrap}
+.btn{width:100%;padding:13px;border-radius:var(--r12);border:none;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:-.2px}
+.btn-b{background:linear-gradient(135deg,var(--b2),var(--b3));color:#fff;box-shadow:0 4px 16px rgba(37,99,235,.25)}
+.btn-b:hover{opacity:.92}.btn-b:active{transform:scale(.98)}
+.btn-t{background:linear-gradient(135deg,var(--teal2),#0f766e);color:#fff}
+.btn-t:hover{opacity:.92}.btn-t:active{transform:scale(.98)}
+.btn-pu{background:linear-gradient(135deg,var(--pu2),#4c1d95);color:#fff}
+.btn-pu:hover{opacity:.92}.btn-pu:active{transform:scale(.98)}
+.privacy{font-size:11px;color:var(--tx3);text-align:center;margin-top:8px;line-height:1.5}
+.sec-label{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--tx2);margin-bottom:10px;margin-top:20px}
+.sec-label:first-child{margin-top:0}
+
+/* ═══ SCREEN 1: SETUP ═══ */
+#s1{overflow-y:auto;padding-bottom:90px}
+.topnav{padding:12px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--bdr);background:rgba(7,9,15,.97);backdrop-filter:blur(14px);position:sticky;top:0;z-index:20}
+.nbk{width:31px;height:31px;border-radius:8px;background:var(--bg2);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx1);font-size:14px;flex-shrink:0}
+.nbk:hover{color:var(--tx0)}.ntitle{font-size:15px;font-weight:700}
+.apibadge{margin-left:auto;display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--bdr);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--tx2);cursor:pointer}
+.adot{width:6px;height:6px;border-radius:50%;background:var(--teal)}.adot.am{background:var(--am)}
+.s1b{padding:16px;max-width:520px;margin:0 auto;width:100%}
+.slbl{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--tx2);margin-bottom:10px;margin-top:20px}
+.slbl:first-child{margin-top:0}
+.slbl small{color:var(--tx3);font-size:9px;text-transform:none;letter-spacing:0;font-weight:400;margin-left:3px}
+
+/* mode cards */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mc{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r16);padding:15px 13px;cursor:pointer;transition:all .15s;position:relative}
+.mc:hover{border-color:var(--bdr2)}
+.mc.sel-task{border-color:var(--b);background:rgba(59,130,246,.08)}
+.mc.sel-task .mc-title{color:var(--b)}
+.mc.sel-ff{border-color:var(--pu);background:rgba(167,139,250,.08)}
+.mc.sel-ff .mc-title{color:var(--pu)}
+.mc-ico{font-size:24px;margin-bottom:7px}
+.mc-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.mc-desc{font-size:11px;color:var(--tx2);line-height:1.5}
+.mc-new{position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;background:rgba(167,139,250,.18);color:var(--pu);border:1px solid rgba(167,139,250,.3)}
+
+/* lang grid */
+.lang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:6px}
+.lc{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r12);padding:10px 8px;cursor:pointer;text-align:center;transition:all .15s}
+.lc:hover{border-color:var(--bdr2)}.lc.sel{border-color:var(--teal);background:rgba(45,212,191,.07)}
+.lc.sel .lcn{color:var(--teal)}
+.lcf{font-size:20px;line-height:1;margin-bottom:3px}.lcn{font-size:11px;font-weight:600}
+.lcnat{font-size:10px;color:var(--tx2);margin-top:1px}.lcrg{font-size:9px;color:var(--tx3);margin-top:1px}
+
+/* sit grid */
+.sit-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.sc{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r12);padding:12px 10px;cursor:pointer;transition:all .15s}
+.sc:hover{border-color:var(--bdr2)}.sc.sel{border-color:var(--gr);background:rgba(74,222,128,.07)}
+.sc.sel .sc-t{color:var(--gr)}.sci{font-size:20px;margin-bottom:5px}
+.sc-t{font-size:12px;font-weight:600;margin-bottom:2px}.sc-s{font-size:11px;color:var(--tx2)}
+
+/* ctx */
+.ctx-ta{width:100%;background:var(--bg2);border:1px solid var(--bdr2);border-radius:var(--r12);padding:11px 13px;color:var(--tx0);font-family:var(--font);font-size:13px;line-height:1.55;outline:none;resize:vertical;min-height:75px;transition:border-color .2s}
+.ctx-ta:focus{border-color:var(--b)}
+.nrow{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+
+/* freeflow config */
+#ff-cfg{display:none;background:var(--bg2);border:1px solid rgba(167,139,250,.22);border-radius:var(--r16);padding:15px;margin-top:8px;animation:fi .18s ease}
+@keyframes fi{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.ff-hdr{font-size:12px;font-weight:700;color:var(--pu);margin-bottom:11px;display:flex;align-items:center;gap:6px}
+.ff-note{background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:var(--r8);padding:10px 12px;font-size:12px;color:var(--tx1);line-height:1.6;margin-bottom:13px}
+.ff-note strong{color:var(--pu)}
+.lang-pair{display:grid;grid-template-columns:1fr 28px 1fr;gap:6px;align-items:end;margin-bottom:12px}
+.lp-arrow{display:flex;align-items:center;justify-content:center;padding-bottom:2px;color:var(--tx2);font-size:16px}
+.ff-sel{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--r8);padding:8px 10px;color:var(--tx0);font-family:var(--font);font-size:12px;outline:none;transition:border-color .2s}
+.ff-sel:focus{border-color:var(--pu)}
+.ff-names{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.audio-toggle{display:flex;align-items:center;gap:10px;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.18);border-radius:var(--r12);padding:11px 13px;margin-bottom:12px;cursor:pointer}
+.at-icon{font-size:20px}.at-info{flex:1}
+.at-title{font-size:13px;font-weight:600;color:var(--pu)}
+.at-sub{font-size:11px;color:var(--tx2);margin-top:2px}
+.toggle{position:relative;width:38px;height:21px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.ttrack{position:absolute;inset:0;border-radius:11px;background:var(--bg3);border:1px solid var(--bdr2);cursor:pointer;transition:all .2s}
+.toggle input:checked+.ttrack{background:var(--teal2);border-color:var(--teal)}
+.ttrack::before{content:'';position:absolute;width:15px;height:15px;left:2px;top:2px;border-radius:50%;background:var(--tx2);transition:all .2s}
+.toggle input:checked+.ttrack::before{transform:translateX(17px);background:#fff}
+
+.s1footer{position:fixed;bottom:0;left:0;right:0;padding:12px 16px 18px;border-top:1px solid var(--bdr);background:rgba(7,9,15,.97);backdrop-filter:blur(14px)}
+.s1fi{max-width:520px;margin:0 auto}
+
+/* ═══ SCREEN 2: TASK CHAT ═══ */
+#s2{height:100svh;max-height:100svh;overflow:hidden}
+.chatnav{padding:10px 13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bdr);background:rgba(7,9,15,.97);backdrop-filter:blur(14px);flex-shrink:0}
+.cnbk{width:31px;height:31px;border-radius:8px;background:var(--bg2);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx1);font-size:14px;flex-shrink:0}
+.cni{flex:1;min-width:0}.cnt{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cns{font-size:10px;color:var(--tx2);margin-top:1px}
+.cpill{display:flex;align-items:center;gap:4px;flex-shrink:0;cursor:pointer;background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);border-radius:20px;padding:4px 9px}
+.cpf{font-size:12px}.cpn{font-size:11px;font-weight:600;color:var(--teal)}
+.astrip{display:flex;align-items:center;gap:7px;padding:6px 13px;background:var(--bg1);border-bottom:1px solid var(--bdr);flex-shrink:0;font-size:12px;font-weight:600;color:#e8eef8}
+.asdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .3s}
+.asdot.free{background:#4ade80;box-shadow:0 0 6px rgba(74,222,128,.6)}
+.asdot.paid{background:#fbbf24;box-shadow:0 0 6px rgba(251,191,36,.5)}
+.asdot.err{background:#f87171;box-shadow:0 0 6px rgba(248,113,113,.5)}
+.asq{margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:700;color:#4ade80}
+.msgs{flex:1;overflow-y:auto;padding:10px 10px 5px;display:flex;flex-direction:column;gap:8px}
+.sys-chip{align-self:center;font-size:12px;font-weight:500;color:var(--tx1);background:var(--bg2);border:1px solid var(--bdr);border-radius:20px;padding:5px 14px;max-width:96%;text-align:center}
+.sys-chip.error{font-size:13px;font-weight:700;color:#fff;background:#7f1d1d;border:2px solid #ef4444;border-radius:10px;padding:10px 16px;box-shadow:0 2px 16px rgba(239,68,68,.5);animation:errbounce .3s ease}
+.sys-chip.warn{font-size:13px;font-weight:600;color:#fff;background:#78350f;border:2px solid #f59e0b;border-radius:10px;padding:10px 16px;box-shadow:0 2px 12px rgba(245,158,11,.4)}
+.sys-chip.info{font-size:12px;color:var(--tx0);background:#1e3a5f;border:1px solid #3b82f6;border-radius:20px;padding:5px 14px}
+@keyframes errbounce{0%{transform:scale(.92);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+.mw{display:flex;flex-direction:column;gap:3px;max-width:82%}
+.mw.r{align-self:flex-end;align-items:flex-end}.mw.l{align-self:flex-start;align-items:flex-start}
+.msnd{font-size:10px;color:var(--tx3);padding:0 4px}
+.bbl{border-radius:15px;padding:9px 12px;font-size:13.5px;line-height:1.55}
+.bbl.a{background:linear-gradient(135deg,var(--b2),var(--b3));color:#fff;border-bottom-right-radius:3px}
+.bbl.b{background:var(--bg2);border:1px solid var(--bdr2);color:var(--tx0);border-bottom-left-radius:3px}
+.bbl.bot{background:var(--bg1);border:1px solid rgba(45,212,191,.15);color:var(--tx0);border-bottom-left-radius:3px}
+.bbl.ffa{background:linear-gradient(135deg,var(--pu2),#4c1d95);color:#fff;border-bottom-right-radius:3px}
+.bbl.ffb{background:var(--bg1);border:1px solid rgba(167,139,250,.22);color:var(--tx0);border-bottom-left-radius:3px}
+.bbl-note{font-size:11px;color:var(--tx2);padding:0 4px;font-style:italic}
+.rtl{direction:rtl;text-align:right}
+.dots{background:var(--bg2);border:1px solid var(--bdr2);border-radius:15px;border-bottom-left-radius:3px;padding:10px 13px;display:flex;gap:5px;align-items:center;align-self:flex-start}
+.dots span{width:5px;height:5px;border-radius:50%;background:var(--tx2);animation:bd 1.2s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes bd{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.esc{align-self:center;width:95%;max-width:440px;background:var(--bg1);border:1px solid rgba(248,113,113,.3);border-radius:var(--r16);padding:13px}
+.esct{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--ro);margin-bottom:6px}
+.escq{font-size:12px;color:var(--tx1);margin-bottom:10px;line-height:1.5;background:rgba(248,113,113,.06);border-radius:var(--r8);padding:7px 10px}
+.escq strong{color:var(--tx0);font-weight:500}
+.esci{width:100%;background:var(--bg3);border:1px solid rgba(248,113,113,.25);border-radius:var(--r8);padding:8px 11px;color:var(--tx0);font-family:var(--font);font-size:13px;outline:none;margin-bottom:6px;transition:border-color .2s}
+.esci:focus{border-color:var(--ro)}
+.escbtn{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.28);border-radius:var(--r8);padding:7px 13px;color:var(--ro);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.escbtn:hover{background:rgba(248,113,113,.22)}
+
+/* task input bar */
+.ibar{flex-shrink:0;padding:8px 11px 14px;border-top:1px solid var(--bdr);background:var(--bg0)}
+.sprow{display:flex;gap:5px;margin-bottom:8px}
+.spbtn{flex:1;padding:7px 8px;border-radius:var(--r8);border:1px solid var(--bdr);background:none;color:var(--tx2);font-family:var(--font);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:4px}
+.spbtn.on-a{background:var(--bg3);border-color:rgba(59,130,246,.4);color:var(--b)}
+.spbtn.on-b{background:var(--bg3);border-color:rgba(45,212,191,.4);color:var(--teal)}
+.spdot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.irow{display:flex;gap:6px;align-items:flex-end}
+.chat-ta{flex:1;background:var(--bg2);border:1px solid var(--bdr2);border-radius:var(--r12);padding:10px 12px;color:var(--tx0);font-family:var(--font);font-size:14px;outline:none;resize:none;min-height:42px;max-height:95px;line-height:1.5;transition:border-color .2s}
+.chat-ta:focus{border-color:var(--b)}.chat-ta.mb:focus{border-color:var(--teal)}
+.ibtn{width:42px;height:42px;border-radius:var(--r12);flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--bdr2);background:var(--bg2);cursor:pointer;transition:all .15s;color:var(--tx1)}
+.ibtn:hover{color:var(--tx0);border-color:var(--bdr3)}
+.ibtn.send{background:linear-gradient(135deg,var(--b2),var(--b3));border:none;color:#fff}
+.ibtn.mic-on{background:rgba(248,113,113,.12);border-color:var(--ro);color:var(--ro);animation:mp 1s ease-in-out infinite}
+@keyframes mp{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.ihint{font-size:11px;color:var(--tx3);text-align:center;margin-top:5px}
+
+/* ═══ FREEFLOW SCREEN ═══ */
+#s3{height:100svh;max-height:100svh;overflow:hidden;
+  background:radial-gradient(ellipse 100% 60% at 50% 0,rgba(124,58,237,.1),transparent 65%)}
+.ff-header{padding:11px 13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(167,139,250,.12);background:rgba(7,9,15,.97);backdrop-filter:blur(14px);flex-shrink:0}
+.ff-title{flex:1}
+.ff-badge{display:flex;align-items:center;gap:4px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:20px;padding:4px 9px;font-size:11px;font-weight:600;color:var(--pu);flex-shrink:0}
+.ff-astrip{display:flex;align-items:center;gap:7px;padding:6px 13px;background:rgba(124,58,237,.07);border-bottom:1px solid rgba(167,139,250,.1);flex-shrink:0;font-size:12px;font-weight:600;color:#e8eef8}
+.ff-body{flex:1;display:grid;grid-template-rows:1fr 1fr;overflow:hidden}
+.ff-half{display:flex;flex-direction:column;padding:12px;position:relative;overflow:hidden}
+.ff-half.top{border-bottom:1px solid rgba(167,139,250,.1)}
+.ff-person-label{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.fp-name{font-size:13px;font-weight:700}.fp-lang{font-size:11px;color:var(--tx2);margin-left:2px}.fp-flag{font-size:16px}
+.ff-msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:7px;padding-right:4px}
+.ff-msg{border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.5;max-width:90%}
+.ff-msg.mine{background:linear-gradient(135deg,var(--pu2),#4c1d95);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+.ff-msg.theirs{background:var(--bg2);border:1px solid rgba(167,139,250,.18);color:var(--tx0);align-self:flex-start;border-bottom-left-radius:3px}
+.ff-msg .ff-orig{font-size:10px;opacity:.65;margin-top:3px;display:block}
+.ff-mic-area{flex-shrink:0;padding-top:8px;display:flex;align-items:center;gap:8px}
+.ff-mic{width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.ff-mic.idle{background:rgba(167,139,250,.12);border:2px solid rgba(167,139,250,.3)}
+.ff-mic.idle:hover{background:rgba(167,139,250,.2)}
+.ff-mic.listening{background:rgba(167,139,250,.22);border:2px solid var(--pu);animation:lpulse 1s ease-in-out infinite}
+.ff-mic.speaking{background:rgba(45,212,191,.12);border:2px solid var(--teal);animation:lpulse 1.4s ease-in-out infinite}
+.ff-mic.processing{background:rgba(251,191,36,.1);border:2px solid var(--am2);animation:lpulse .7s ease-in-out infinite}
+@keyframes lpulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(167,139,250,.4)}50%{transform:scale(1.06);box-shadow:0 0 0 8px rgba(167,139,250,0)}}
+.ff-mic svg{width:22px;height:22px}
+.ff-mic-label{font-size:11px;color:var(--tx2);line-height:1.4}
+.ff-mic-label strong{display:block;font-size:12px;color:var(--tx0);font-weight:600}
+.ff-status{font-size:11px;font-style:italic;color:var(--pu);height:14px}
+.ff-text-row{display:flex;gap:6px;padding-top:6px;border-top:1px solid rgba(167,139,250,.08);margin-top:6px}
+.ff-ta{flex:1;background:var(--bg2);border:1px solid rgba(167,139,250,.15);border-radius:var(--r8);padding:8px 11px;color:var(--tx0);font-family:var(--font);font-size:13px;outline:none;resize:none;min-height:38px;max-height:80px;line-height:1.45;transition:border-color .2s}
+.ff-ta:focus{border-color:var(--pu)}
+.ff-send{width:38px;height:38px;border-radius:var(--r8);flex-shrink:0;display:flex;align-items:center;justify-content:center;border:none;background:linear-gradient(135deg,var(--pu2),#4c1d95);cursor:pointer;color:#fff}
+
+/* overlays */
+.overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+.sheet{width:100%;max-width:480px;background:var(--bg2);border:1px solid var(--bdr2);border-radius:20px 20px 0 0;padding:17px 17px 28px;animation:su .22s ease}
+@keyframes su{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.drag{width:32px;height:3px;background:var(--bg4);border-radius:2px;margin:0 auto 14px}
+.stitle{font-size:15px;font-weight:700;margin-bottom:13px}
+.togrow{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--bdr)}
+.togrow:last-child{border-bottom:none}
+.toginfo{flex:1}.toginfo .t1{font-size:13px;font-weight:500}.toginfo .t2{font-size:11px;color:var(--tx2);margin-top:2px}
+.tog-t input:checked+.ttrack{background:var(--teal2);border-color:var(--teal)}
+
+/* ═══ GUIDE / HELP ═══ */
+#guide{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);overflow-y:auto;padding:16px 12px 28px}
+#guide.open{display:block}
+.gcard{max-width:580px;margin:0 auto;background:var(--bg1);border:1px solid var(--bdr2);border-radius:var(--r24);overflow:hidden}
+.gtop{padding:20px 20px 14px;border-bottom:1px solid var(--bdr);background:radial-gradient(ellipse 80% 100% at 0 0,rgba(59,130,246,.07),transparent 60%)}
+.gtop h2{font-size:18px;font-weight:800;margin-bottom:4px}
+.gtop p{font-size:12.5px;color:var(--tx1);line-height:1.65}
+.gbody{padding:16px 20px}
+/* language tabs for guide */
+.glang-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.glt{padding:5px 11px;border-radius:20px;border:1px solid var(--bdr2);background:none;color:var(--tx2);font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
+.glt.sel{background:rgba(59,130,246,.12);border-color:var(--b);color:var(--b)}
+.glang-content{display:none}.glang-content.active{display:block}
+.gs{margin-bottom:18px}
+.gs h3{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:9px}
+.gstep{display:flex;gap:9px;margin-bottom:9px;align-items:flex-start}
+.gnum{width:20px;height:20px;border-radius:50%;flex-shrink:0;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:var(--b);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.gtxt{font-size:13px;color:var(--tx1);line-height:1.55;flex:1}
+.gtxt strong{color:var(--tx0);font-weight:600}
+.gtxt code{font-family:var(--mono);font-size:11px;background:var(--bg3);padding:2px 5px;border-radius:4px;color:var(--teal)}
+.cblk{background:var(--bg0);border:1px solid var(--bdr2);border-radius:var(--r8);padding:11px 13px;margin-top:6px;font-family:var(--mono);font-size:12px;color:var(--teal);overflow-x:auto;white-space:pre;line-height:1.7}
+.use-case-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px}
+.uc{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--r12);padding:10px 10px;text-align:center}
+.uc-ico{font-size:22px;margin-bottom:4px}
+.uc-t{font-size:11px;font-weight:600;color:var(--tx0)}
+.uc-d{font-size:10px;color:var(--tx2);margin-top:2px;line-height:1.4}
+.gclose{width:100%;padding:12px;background:linear-gradient(135deg,var(--b2),var(--b3));border:none;border-radius:var(--r12);color:#fff;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;transition:opacity .2s;box-shadow:0 4px 14px rgba(37,99,235,.25)}
+.gclose:hover{opacity:.88}
+.fhelp{position:fixed;bottom:18px;right:13px;z-index:50;background:var(--bg2);border:1px solid var(--bdr2);border-radius:20px;padding:6px 11px;font-size:12px;color:var(--tx2);cursor:pointer;transition:all .15s;display:none}
+.fhelp:hover{color:var(--tx0);border-color:var(--b)}
+
+/* save session banner */
+.save-bar{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:var(--r8);padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--tx1)}
+.save-bar button{margin-left:auto;padding:4px 10px;border-radius:6px;border:1px solid rgba(59,130,246,.3);background:rgba(59,130,246,.12);color:var(--b);font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer}
+.save-bar button:hover{background:rgba(59,130,246,.22)}
+
+/* ── Speak button on translated bubbles ── */
+.spk-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:6px;padding:8px 14px;
+  border-radius:20px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--teal2),#0f766e);
+  color:#fff;font-family:var(--font);font-size:12px;font-weight:700;
+  box-shadow:0 2px 10px rgba(13,148,136,.35);
+  transition:all .15s;
+}
+.spk-btn:hover{opacity:.88;transform:scale(1.03)}
+.spk-btn:active{transform:scale(.97)}
+.spk-btn.playing{
+  background:linear-gradient(135deg,#b45309,var(--am2));
+  animation:spkpulse 1s ease-in-out infinite;
+}
+.spk-btn.countdown{
+  background:linear-gradient(135deg,#1e40af,var(--b));
+  animation:cdpulse 1s ease-in-out infinite;
+}
+@keyframes spkpulse{0%,100%{box-shadow:0 2px 10px rgba(180,83,9,.4)}50%{box-shadow:0 2px 18px rgba(180,83,9,.7)}}
+@keyframes cdpulse{0%,100%{box-shadow:0 2px 10px rgba(59,130,246,.4);opacity:1}50%{box-shadow:0 2px 18px rgba(59,130,246,.7);opacity:.85}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ S0: API KEYS ══════════════════ -->
+<div id="s0" class="screen active">
+<div class="sw">
+  <div class="brand">
+    <div class="bmark">🌐</div>
+    <div class="bname">Speak<em>Local</em></div>
+  </div>
+  <h1 class="hero">Talk to anyone,<br><em>in any language</em></h1>
+  <p class="hsub">Speak — hear the reply in any language. Ironman, bus conductor, vegetable vendor — SpeakLocal bridges every conversation. Powered by Gemini (free) + Claude fallback. 21 languages including English.</p>
+  <div class="free-badge"><span class="fdot"></span>1,000 free requests/day · no credit card needed</div>
+
+  <div class="field">
+    <label>Your Name</label>
+    <input class="inp" id="s0nm" placeholder="e.g. Rajan" maxlength="30" value="Rajan">
+  </div>
+
+  <p class="tgl-paid" id="tgl-p" onclick="showPaid()">+ Add Claude API key (optional fallback)</p>
+  <div id="paid-sec" class="paid-sec">
+    <div class="sec-label">Claude API Key (Optional)</div>
+    <div class="field">
+      <input class="inp mono" id="ckey" placeholder="sk-ant-..." autocomplete="off">
+    </div>
+  </div>
+
+  <div class="sec-label">Free Gemini API Key</div>
+  <div class="hbox">
+    <div class="hrow"><div class="hnum">1</div><div class="htx">Go to <strong><a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com/app/apikey</a></strong></div></div>
+    <div class="hrow"><div class="hnum">2</div><div class="htx">Sign in with Gmail → <strong>"Create API Key"</strong></div></div>
+    <div class="hrow"><div class="hnum">3</div><div class="htx">Paste key below — starts with <code>AIza...</code></div></div>
+    <div class="hrow"><div class="hnum">4</div><div class="htx"><strong>Free forever.</strong> 1,000 requests/day. No credit card.</div></div>
+  </div>
+  <div class="field">
+    <label>Gemini API Key</label>
+    <input class="inp mono" id="gkey" placeholder="AIza..." autocomplete="off">
+  </div>
+
+  <div class="quota-bar">
+    <span class="qbi">📊</span>
+    <div class="qbf">
+      <div class="qbl">Daily usage (resets midnight)</div>
+      <div class="qbt"><div class="qbfl" id="qbfl" style="width:0%"></div></div>
+    </div>
+    <span class="qbc" id="qbc">0 / 1000</span>
+  </div>
+
+  <button class="btn btn-b" onclick="gotoS1()">Continue →</button>
+  <button class="btn" style="background:var(--bg3);border:1px solid var(--bdr2);color:var(--tx1);margin-top:8px;font-size:13px" onclick="testAPIKey()">🔍 Test API Key &amp; show available models</button>
+  <div id="model-list" style="display:none;margin-top:10px;background:var(--bg2);border:1px solid var(--bdr2);border-radius:12px;padding:12px;font-size:12px;color:var(--tx0);line-height:1.8"></div>
+  <p class="privacy">🔒 Keys stored in this session only. Never sent anywhere except Google/Anthropic APIs.</p>
+</div>
+</div>
+
+<!-- ══════════════════ S1: SETUP ══════════════════ -->
+<div id="s1" class="screen">
+  <div class="topnav">
+    <div class="nbk" onclick="show('s0')">←</div>
+    <div class="ntitle">Setup Session</div>
+    <div class="apibadge" id="apibadge">
+      <span class="adot" id="adot"></span>
+      <span id="adot-tx">Gemini Free</span>
+    </div>
+  </div>
+  <div class="s1b">
+    <div class="slbl">Mode</div>
+    <div class="mode-grid">
+      <div class="mc sel-task" id="mc-task" onclick="pickMode('task')">
+        <div class="mc-ico">🎯</div>
+        <div class="mc-title">Task Mode</div>
+        <div class="mc-desc">You brief the app, local person asks questions — app handles it all</div>
+      </div>
+      <div class="mc" id="mc-ff" onclick="pickMode('ff')">
+        <div class="mc-new">Audio</div>
+        <div class="mc-ico">🔄</div>
+        <div class="mc-title">FreeFlow</div>
+        <div class="mc-desc">Two-way live conversation, each person speaks their own language</div>
+      </div>
+    </div>
+
+    <!-- TASK CFG -->
+    <div id="task-cfg">
+      <div class="slbl">Local person speaks <small>(second person's language)</small></div>
+      <div class="lang-grid" id="lang-grid"></div>
+
+      <div class="slbl">Situation / Use Case</div>
+      <div class="sit-grid" id="sit-grid"></div>
+
+      <div class="slbl">Briefing Context <small>(what should the app know?)</small></div>
+      <textarea class="ctx-ta" id="ctx" placeholder="e.g. I have 10 shirts and 5 trousers to iron. Max budget ₹100. Need by tomorrow evening." rows="3"></textarea>
+
+      <div class="slbl">Names</div>
+      <div class="nrow">
+        <div class="field"><label>Your name (User A)</label><input class="inp" id="s1na" placeholder="Rajan" maxlength="25"></div>
+        <div class="field"><label>Their name (User B)</label><input class="inp" id="s1nb" placeholder="e.g. Murugan" maxlength="25"></div>
+      </div>
+    </div>
+
+    <!-- FREEFLOW CFG -->
+    <div id="ff-cfg">
+      <div class="ff-hdr">🔄 FreeFlow — two-way live translation</div>
+      <div class="ff-note">Both people use <strong>one phone</strong>, each speaking their own language. Pass the phone back and forth. Auto-speaks the translation in the other person's language.</div>
+      <div class="lang-pair">
+        <div>
+          <div class="slbl" style="margin-top:0">Person A language</div>
+          <select class="ff-sel" id="ffa-lang"></select>
+        </div>
+        <div class="lp-arrow">⇄</div>
+        <div>
+          <div class="slbl" style="margin-top:0">Person B language</div>
+          <select class="ff-sel" id="ffb-lang"></select>
+        </div>
+      </div>
+      <div class="ff-names">
+        <div class="field"><label>Person A name</label><input class="inp" id="ffa-nm" placeholder="Rajan" maxlength="20"></div>
+        <div class="field"><label>Person B name</label><input class="inp" id="ffb-nm" placeholder="Kumar" maxlength="20"></div>
+      </div>
+      <div class="audio-toggle">
+        <span class="at-icon">🔊</span>
+        <div class="at-info">
+          <div class="at-title">Auto-speak mode</div>
+          <div class="at-sub">Automatically read out translations aloud</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="ff-audio-tog" checked><div class="ttrack"></div></label>
+      </div>
+    </div>
+  </div>
+  <div class="s1footer"><div class="s1fi">
+    <button class="btn btn-b" id="startbtn" onclick="startSession()">Start talking →</button>
+  </div></div>
+</div>
+
+<!-- ══════════════════ S2: TASK CHAT ══════════════════ -->
+<div id="s2" class="screen">
+  <div class="chatnav" id="chatnav">
+    <div class="cnbk" onclick="show('s1')">←</div>
+    <div class="cni"><div class="cnt" id="cnt"></div><div class="cns" id="cns"></div></div>
+    <div class="cpill" onclick="openSettings()"><span class="cpf" id="cpf">🇮🇳</span><span class="cpn" id="cpn">Tamil</span><span style="color:var(--tx2);font-size:10px;margin-left:2px">⚙</span></div>
+  </div>
+  <div class="astrip" id="astrip"><div class="asdot free" id="asdot"></div><span id="aslbl">Using Gemini Free</span><span class="asq" id="asq">0/1000</span></div>
+  <div class="msgs" id="msgs"></div>
+  <div class="ibar">
+    <div class="sprow" id="sprow"></div>
+    <div class="irow">
+      <button class="ibtn" id="micbtn" onclick="toggleMic()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0"/><line x1="12" y1="21" x2="12" y2="17"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+      </button>
+      <textarea class="chat-ta" id="chat-ta" placeholder="Type or use mic…" rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTask()}"
+        oninput="grow(this)"></textarea>
+      <button class="ibtn send" onclick="sendTask()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+    <div class="ihint" id="ihint"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ S3: FREEFLOW ══════════════════ -->
+<div id="s3" class="screen">
+  <div class="ff-header">
+    <div class="cnbk" onclick="show('s1')">←</div>
+    <div class="ff-title"><div class="cnt" id="ff-cnt">FreeFlow</div><div class="cns" id="ff-cns">Tap mic to speak</div></div>
+    <div class="ff-badge">🔄 FreeFlow</div>
+    <div style="width:5px"></div>
+    <div style="background:var(--bg2);border:1px solid rgba(167,139,250,.2);border-radius:8px;width:31px;height:31px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--tx1)" onclick="openSettings()">⚙</div>
+  </div>
+  <div class="ff-astrip astrip"><div class="asdot free" id="ff-asdot"></div><span id="ff-aslbl">Using Gemini Free</span><span class="asq" id="ff-asq">0/1000</span></div>
+
+  <div class="ff-body">
+    <!-- Person A -->
+    <div class="ff-half top" id="half-a">
+      <div class="ff-person-label">
+        <span class="fp-flag" id="fpa-flag">🇮🇳</span>
+        <span class="fp-name" id="fpa-name">Rajan</span>
+        <span class="fp-lang" id="fpa-lang">(Hindi)</span>
+        <span style="margin-left:auto;font-size:10px;color:var(--tx3)" id="fpa-status"></span>
+      </div>
+      <div class="ff-msgs" id="fpa-msgs"></div>
+      <div class="ff-mic-area">
+        <button class="ff-mic idle" id="ff-mic-a" onclick="ffMicTap('A')">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--pu)"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0"/><line x1="12" y1="21" x2="12" y2="17"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+        </button>
+        <div class="ff-mic-label">
+          <strong id="fpa-mic-lbl">Tap to speak</strong>
+          <span id="fpa-mic-sub" style="color:var(--tx2)">Speak in <span id="fpa-lang-hint">Hindi</span></span>
+        </div>
+      </div>
+      <div class="ff-text-row">
+        <textarea class="ff-ta" id="fpa-ta" placeholder="Or type here…" rows="1" oninput="grow(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ffSendText('A')}"></textarea>
+        <button class="ff-send" onclick="ffSendText('A')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+    </div>
+
+    <!-- Person B -->
+    <div class="ff-half" id="half-b">
+      <div class="ff-person-label">
+        <span class="fp-flag" id="fpb-flag">🇮🇳</span>
+        <span class="fp-name" id="fpb-name">Kumar</span>
+        <span class="fp-lang" id="fpb-lang">(Tamil)</span>
+        <span style="margin-left:auto;font-size:10px;color:var(--tx3)" id="fpb-status"></span>
+      </div>
+      <div class="ff-msgs" id="fpb-msgs"></div>
+      <div class="ff-mic-area">
+        <button class="ff-mic idle" id="ff-mic-b" onclick="ffMicTap('B')">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--pu)"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0"/><line x1="12" y1="21" x2="12" y2="17"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+        </button>
+        <div class="ff-mic-label">
+          <strong id="fpb-mic-lbl">Tap to speak</strong>
+          <span id="fpb-mic-sub" style="color:var(--tx2)">Speak in <span id="fpb-lang-hint">Tamil</span></span>
+        </div>
+      </div>
+      <div class="ff-text-row">
+        <textarea class="ff-ta" id="fpb-ta" placeholder="Or type here…" rows="1" oninput="grow(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ffSendText('B')}"></textarea>
+        <button class="ff-send" onclick="ffSendText('B')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- settings overlay -->
+<div class="overlay" id="sov" onclick="closeOvIf(event,'sov')">
+  <div class="sheet">
+    <div class="drag"></div><div class="stitle">⚙ Settings</div>
+    <div class="togrow tog-t"><div class="toginfo"><div class="t1">Auto-speak translations</div><div class="t2">Play translated text aloud automatically</div></div><label class="toggle"><input type="checkbox" id="tog-autospeak" checked><div class="ttrack"></div></label></div>
+    <div class="togrow"><div class="toginfo"><div class="t1">Show original text</div><div class="t2">Show what was said in original language</div></div><label class="toggle"><input type="checkbox" id="tog-orig" checked><div class="ttrack"></div></label></div>
+    <div class="togrow"><div class="toginfo"><div class="t1">AI smart replies (Task only)</div><div class="t2">Auto-answer questions from your briefing</div></div><label class="toggle"><input type="checkbox" id="tog-ai" checked><div class="ttrack"></div></label></div>
+    <div class="togrow"><div class="toginfo"><div class="t1">Escalation alerts (Task only)</div><div class="t2">Ask you when AI can't answer</div></div><label class="toggle"><input type="checkbox" id="tog-esc" checked><div class="ttrack"></div></label></div>
+    <div class="togrow" style="border-bottom:none"><div class="toginfo"><div class="t1">Auto-switch to Claude fallback</div><div class="t2">Use Claude when Gemini quota runs out</div></div><label class="toggle"><input type="checkbox" id="tog-fb" checked><div class="ttrack"></div></label></div>
+    <div style="margin-top:13px;padding-top:13px;border-top:1px solid var(--bdr)">
+      <div class="toginfo" style="margin-bottom:8px"><div class="t1">Change Gemini API Key</div><div class="t2">Paste a new key if quota is reached</div></div>
+      <div style="display:flex;gap:8px">
+        <input class="inp mono" id="new-gkey" placeholder="AIza..." style="font-size:12px;flex:1">
+        <button onclick="updateGeminiKey()" style="padding:0 14px;border-radius:var(--r8);border:none;background:linear-gradient(135deg,var(--teal2),#0f766e);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Save</button>
+      </div>
+    </div>
+    <div style="margin-top:10px"><button class="btn btn-b" onclick="closeOv('sov')">Done</button></div>
+  </div>
+</div>
+
+<!-- ══════════════════ GUIDE ══════════════════ -->
+<div id="guide">
+  <div class="gcard">
+    <div class="gtop">
+      <h2>📖 SpeakLocal — How it works</h2>
+      <p>Your universal language bridge — ironman, bus, market, doctor and more. Choose your language to read the guide.</p>
+    </div>
+    <div class="gbody">
+
+      <!-- Language tabs -->
+      <div class="glang-tabs">
+        <button class="glt sel" onclick="switchGuide('en',this)">🇬🇧 English</button>
+        <button class="glt" onclick="switchGuide('hi',this)">🇮🇳 हिन्दी</button>
+        <button class="glt" onclick="switchGuide('ta',this)">🇮🇳 தமிழ்</button>
+        <button class="glt" onclick="switchGuide('kn',this)">🇮🇳 ಕನ್ನಡ</button>
+        <button class="glt" onclick="switchGuide('te',this)">🇮🇳 తెలుగు</button>
+        <button class="glt" onclick="switchGuide('ml',this)">🇮🇳 മലയാളം</button>
+      </div>
+
+      <!-- English Guide -->
+      <div class="glang-content active" id="guide-en">
+        <div class="gs"><h3>What is SpeakLocal?</h3>
+          <div class="gtxt" style="font-size:13px;color:var(--tx1);line-height:1.65;margin-bottom:10px">SpeakLocal lets you communicate with anyone who speaks a different language — using your phone as a live translator. You speak or type in English; the other person hears it in their language. They speak back; you hear it in English.</div>
+        </div>
+
+        <div class="gs"><h3>Use Cases</h3>
+          <div class="use-case-grid">
+            <div class="uc"><div class="uc-ico">👕</div><div class="uc-t">Laundry / Ironman</div><div class="uc-d">Tell him how many clothes, rate, and pickup time</div></div>
+            <div class="uc"><div class="uc-ico">🚌</div><div class="uc-t">Bus / Auto / Cab</div><div class="uc-d">Tell conductor your stop, ask fare, get directions</div></div>
+            <div class="uc"><div class="uc-ico">🥬</div><div class="uc-t">Vegetable Market</div><div class="uc-d">Ask prices, quantities, bargain in local language</div></div>
+            <div class="uc"><div class="uc-ico">✂️</div><div class="uc-t">Tailor</div><div class="uc-d">Explain measurements, style, delivery date</div></div>
+            <div class="uc"><div class="uc-ico">🔧</div><div class="uc-t">Plumber / Repair</div><div class="uc-d">Describe the problem, get a quote</div></div>
+            <div class="uc"><div class="uc-ico">🏥</div><div class="uc-t">Doctor / Clinic</div><div class="uc-d">Explain symptoms, understand advice</div></div>
+            <div class="uc"><div class="uc-ico">🍽️</div><div class="uc-t">Restaurant</div><div class="uc-d">Order food, ask about ingredients</div></div>
+            <div class="uc"><div class="uc-ico">✏️</div><div class="uc-t">Custom</div><div class="uc-d">Any situation — describe it yourself</div></div>
+          </div>
+        </div>
+
+        <div class="gs"><h3>How to use — Task Mode (recommended)</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>Enter your briefing:</strong> Tell the app everything you need to communicate. E.g. "I have 10 shirts and 5 trousers to iron. Budget is ₹80. Need them by tomorrow 6 PM."</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>Choose the language</strong> the other person speaks (Tamil, Kannada, Telugu, etc.)</div></div>
+          <div class="gstep"><div class="gnum">3</div><div class="gtxt"><strong>Switch to "Their turn"</strong> and hand the phone. They speak or type in their language.</div></div>
+          <div class="gstep"><div class="gnum">4</div><div class="gtxt">The app <strong>auto-answers</strong> questions from your briefing. If it doesn't know, it asks you directly.</div></div>
+        </div>
+
+        <div class="gs"><h3>How to use — FreeFlow Mode</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt">Both people share <strong>one phone</strong> — pass it back and forth</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt">Each person taps their mic button and speaks in their own language</div></div>
+          <div class="gstep"><div class="gnum">3</div><div class="gtxt">The app <strong>automatically translates and speaks</strong> it to the other person</div></div>
+        </div>
+
+        <div class="gs"><h3>Run on any device</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>Browser (any device):</strong> Open <code>SpeakLocal.html</code> in Chrome or Edge</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>Android:</strong> Open in Chrome → 3-dot menu → "Add to Home Screen" → installs as an app</div></div>
+          <div class="gstep"><div class="gnum">3</div><div class="gtxt"><strong>iPhone:</strong> Open in Safari → Share → "Add to Home Screen"</div></div>
+          <div class="gstep"><div class="gnum">4</div><div class="gtxt"><strong>Host online free:</strong> Upload as <code>index.html</code> to GitHub Pages</div></div>
+        </div>
+      </div>
+
+      <!-- Hindi Guide -->
+      <div class="glang-content" id="guide-hi">
+        <div class="gs"><h3>SpeakLocal क्या है?</h3>
+          <div class="gtxt" style="font-size:13px;color:var(--tx1);line-height:1.7">SpeakLocal एक ऐसा ऐप है जो आपको किसी भी दूसरी भाषा बोलने वाले व्यक्ति से बात करने में मदद करता है। आप अपनी भाषा में बोलें — दूसरा व्यक्ति उनकी भाषा में सुनेगा।</div>
+        </div>
+        <div class="gs"><h3>उपयोग के उदाहरण</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>प्रेस वाला (ironman):</strong> "मेरे पास 10 कमीजें और 5 पैंट हैं। ₹80 में होगा क्या? कल शाम तक चाहिए।"</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>बस / ऑटो:</strong> कंडक्टर को बताएं कहाँ उतरना है, किराया पूछें</div></div>
+          <div class="gstep"><div class="gnum">3</div><div class="gtxt"><strong>सब्जी बाजार:</strong> दाम पूछें, मोलभाव करें</div></div>
+          <div class="gstep"><div class="gnum">4</div><div class="gtxt"><strong>डॉक्टर / दर्जी / मिस्त्री:</strong> किसी भी काम के लिए उपयोग करें</div></div>
+        </div>
+        <div class="gs"><h3>कैसे इस्तेमाल करें — Task Mode</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt">पहले अपनी जानकारी टाइप करें — क्या काम है, क्या बजट है, कब चाहिए</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt">दूसरे व्यक्ति की भाषा चुनें (तमिल, कन्नड़, तेलुगु आदि)</div></div>
+          <div class="gstep"><div class="gnum">3</div><div class="gtxt">फोन उस व्यक्ति को दें — वो अपनी भाषा में बात करेगा, ऐप translate करेगा</div></div>
+          <div class="gstep"><div class="gnum">4</div><div class="gtxt">अगर ऐप को जवाब नहीं पता, तो वो <strong>आपसे पूछेगा</strong></div></div>
+        </div>
+        <div class="gs"><h3>फोन पर कैसे इंस्टॉल करें</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>Android:</strong> Chrome में खोलें → 3-dot मेनू → "Home Screen पर जोड़ें"</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>iPhone:</strong> Safari में खोलें → Share → "Home Screen पर जोड़ें"</div></div>
+        </div>
+      </div>
+
+      <!-- Tamil Guide -->
+      <div class="glang-content" id="guide-ta">
+        <div class="gs"><h3>SpeakLocal என்றால் என்ன?</h3>
+          <div class="gtxt" style="font-size:13px;color:var(--tx1);line-height:1.7">SpeakLocal என்பது வேற மொழி பேசுபவரோடு உரையாட உதவும் ஒரு இலவச அப்ளிகேஷன். நீங்கள் ஆங்கிலத்தில் பேசுவதை அவர்கள் தங்கள் மொழியில் கேட்பார்கள்.</div>
+        </div>
+        <div class="gs"><h3>எவ்வாறு பயன்படுத்துவது</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>இஸ்திரி கடை:</strong> "எனக்கு 10 சட்டைகளும் 5 பேன்ட்களும் இஸ்திரி போட வேண்டும். ₹80 ஆகுமா? நாளை மாலை வேண்டும்."</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>பஸ்/ஆட்டோ:</strong> நிறுத்தம் சொல்லுங்கள், கட்டணம் கேளுங்கள்</div></div>
+          <div class="gstep"><div class="gnum">3</div><div class="gtxt"><strong>காய்கறி கடை:</strong> விலை கேளுங்கள், பேரம் பேசுங்கள்</div></div>
+        </div>
+        <div class="gs"><h3>Task Mode பயன்படுத்தும் முறை</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt">உங்கள் தகவலை தட்டச்சு செய்யுங்கள் (என்ன வேண்டும், எவ்வளவு பட்ஜெட், எப்போது வேண்டும்)</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt">மறுபுறம் உள்ளவரின் மொழியை தேர்ந்தெடுங்கள்</div></div>
+          <div class="gstep"><div class="gnum">3</div><div class="gtxt">போனை அவரிடம் கொடுங்கள் — அவர் தமிழில் பேசலாம், ஆப் மொழிபெயர்க்கும்</div></div>
+        </div>
+        <div class="gs"><h3>போனில் நிறுவுவது எப்படி</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>Android:</strong> Chrome-ல் திறந்து → 3-dot மெனு → "Home Screen-ல் சேர்"</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>iPhone:</strong> Safari-ல் திறந்து → Share → "Home Screen-ல் சேர்"</div></div>
+        </div>
+      </div>
+
+      <!-- Kannada Guide -->
+      <div class="glang-content" id="guide-kn">
+        <div class="gs"><h3>SpeakLocal ಎಂದರೇನು?</h3>
+          <div class="gtxt" style="font-size:13px;color:var(--tx1);line-height:1.7">SpeakLocal ಬೇರೆ ಭಾಷೆ ಮಾತಾಡುವವರೊಂದಿಗೆ ಸಂವಹನ ಮಾಡಲು ಸಹಾಯ ಮಾಡುವ ಉಚಿತ ಅಪ್ಲಿಕೇಶನ್. ನೀವು ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಮಾತಾಡಿ — ಅವರು ತಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ಕೇಳುತ್ತಾರೆ.</div>
+        </div>
+        <div class="gs"><h3>ಬಳಕೆ ಉದಾಹರಣೆಗಳು</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>ಇಸ್ತ್ರಿ ಅಂಗಡಿ:</strong> "ನನಗೆ 10 ಅಂಗಿ ಮತ್ತು 5 ಪ್ಯಾಂಟ್ ಇಸ್ತ್ರಿ ಮಾಡಬೇಕು. ₹80 ಆಗುತ್ತಾ? ನಾಳೆ ಸಂಜೆ ಬೇಕು."</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>ಬಸ್/ಆಟೋ:</strong> ನಿಲ್ದಾಣ ಹೇಳಿ, ಶುಲ್ಕ ಕೇಳಿ</div></div>
+          <div class="gstep"><div class="gnum">3</div><div class="gtxt"><strong>ತರಕಾರಿ ಮಾರುಕಟ್ಟೆ:</strong> ಬೆಲೆ ಕೇಳಿ, ಚೌಕಾಸಿ ಮಾಡಿ</div></div>
+        </div>
+        <div class="gs"><h3>ಫೋನ್‌ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದು ಹೇಗೆ</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>Android:</strong> Chrome-ನಲ್ಲಿ ತೆರೆಯಿರಿ → 3-ಡಾಟ್ ಮೆನು → "Home Screen-ಗೆ ಸೇರಿಸಿ"</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>iPhone:</strong> Safari-ನಲ್ಲಿ ತೆರೆಯಿರಿ → Share → "Home Screen-ಗೆ ಸೇರಿಸಿ"</div></div>
+        </div>
+      </div>
+
+      <!-- Telugu Guide -->
+      <div class="glang-content" id="guide-te">
+        <div class="gs"><h3>SpeakLocal అంటే ఏమిటి?</h3>
+          <div class="gtxt" style="font-size:13px;color:var(--tx1);line-height:1.7">SpeakLocal వేరే భాష మాట్లాడే వారితో మాట్లాడటానికి సహాయపడే ఉచిత యాప్. మీరు ఇంగ్లీష్‌లో మాట్లాడండి — వారు వారి భాషలో వింటారు.</div>
+        </div>
+        <div class="gs"><h3>వినియోగ ఉదాహరణలు</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>ఇస్త్రీ కొట్టు:</strong> "నాకు 10 చొక్కాలు మరియు 5 ప్యాంట్లు ఇస్త్రీ చేయాలి. ₹80 అవుతుందా? రేపు సాయంత్రం కావాలి."</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>బస్/ఆటో:</strong> ఆగాల్సిన చోటు చెప్పండి, చార్జి అడగండి</div></div>
+          <div class="gstep"><div class="gnum">3</div><div class="gtxt"><strong>కూరగాయల మార్కెట్:</strong> ధర అడగండి, బేరమాడండి</div></div>
+        </div>
+        <div class="gs"><h3>ఫోన్‌లో ఇన్‌స్టాల్ చేయడం ఎలా</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>Android:</strong> Chrome-లో తెరవండి → 3-డాట్ మెనూ → "Home Screen-కు జోడించు"</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>iPhone:</strong> Safari-లో తెరవండి → Share → "Home Screen-కు జోడించు"</div></div>
+        </div>
+      </div>
+
+      <!-- Malayalam Guide -->
+      <div class="glang-content" id="guide-ml">
+        <div class="gs"><h3>SpeakLocal എന്താണ്?</h3>
+          <div class="gtxt" style="font-size:13px;color:var(--tx1);line-height:1.7">SpeakLocal വ്യത്യസ്ത ഭാഷ സംസാരിക്കുന്നവരുമായി ആശയവിനിമയം നടത്താൻ സഹായിക്കുന്ന സൌജന്യ ആപ്ലിക്കേഷൻ. നിങ്ങൾ ഇംഗ്ലീഷിൽ സംസാരിക്കൂ — അവർ അവരുടെ ഭാഷയിൽ കേൾക്കും.</div>
+        </div>
+        <div class="gs"><h3>ഉദാഹരണങ്ങൾ</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>ഇസ്തിരി കടക്കാരൻ:</strong> "എനിക്ക് 10 ഷർട്ടും 5 പാന്റ്സും ഇസ്തിരിയിടണം. ₹80 ആകുമോ? നാളെ വൈകുന്നേരം വേണം."</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>ബസ്/ഓട്ടോ:</strong> ഇറങ്ങേണ്ട സ്ഥലം പറയൂ, ചാർജ് ചോദിക്കൂ</div></div>
+          <div class="gstep"><div class="gnum">3</div><div class="gtxt"><strong>പച്ചക്കറി ചന്ത:</strong> വില ചോദിക്കൂ, വിലപേശൂ</div></div>
+        </div>
+        <div class="gs"><h3>ഫോണിൽ ഇൻസ്റ്റാൾ ചെയ്യുന്ന വിധം</h3>
+          <div class="gstep"><div class="gnum">1</div><div class="gtxt"><strong>Android:</strong> Chrome-ൽ തുറക്കൂ → 3-dot മെനു → "Home Screen-ൽ ചേർക്കൂ"</div></div>
+          <div class="gstep"><div class="gnum">2</div><div class="gtxt"><strong>iPhone:</strong> Safari-ൽ തുറക്കൂ → Share → "Home Screen-ൽ ചേർക്കൂ"</div></div>
+        </div>
+      </div>
+
+      <button class="gclose" onclick="closeGuide()">Got it — Start SpeakLocal →</button>
+    </div>
+  </div>
+</div>
+<button class="fhelp" id="fhelp" onclick="openGuide()">📖 Help</button>
+
+<script>
+// ── Globals (declared first) ──────────────────────────
+const _bubbleData   = {};   // stores {text,lang} per speak-button id
+const _speakTimers  = {};   // stores countdown interval per button id
+let   _micPermitted = false; // true once user has granted mic permission
+// ──────────────────────────────────────────────────────
+
+// ════════════════════════════════════════
+//  LANGUAGES
+// ════════════════════════════════════════
+const LANGS=[
+  {id:'en',name:'English',   nat:'English',   flag:'🇬🇧',region:'Global',        rtl:false,loc:'en-IN'},
+  {id:'hi',name:'Hindi',     nat:'हिन्दी',    flag:'🇮🇳',region:'North India',   rtl:false,loc:'hi-IN'},
+  {id:'ta',name:'Tamil',     nat:'தமிழ்',    flag:'🇮🇳',region:'South India',   rtl:false,loc:'ta-IN'},
+  {id:'kn',name:'Kannada',   nat:'ಕನ್ನಡ',     flag:'🇮🇳',region:'Karnataka',    rtl:false,loc:'kn-IN'},
+  {id:'te',name:'Telugu',    nat:'తెలుగు',    flag:'🇮🇳',region:'Andhra',        rtl:false,loc:'te-IN'},
+  {id:'ml',name:'Malayalam', nat:'മലയാളം',   flag:'🇮🇳',region:'Kerala',        rtl:false,loc:'ml-IN'},
+  {id:'mr',name:'Marathi',   nat:'मराठी',    flag:'🇮🇳',region:'Maharashtra',   rtl:false,loc:'mr-IN'},
+  {id:'bn',name:'Bengali',   nat:'বাংলা',    flag:'🇧🇩',region:'Bengal',        rtl:false,loc:'bn-IN'},
+  {id:'gu',name:'Gujarati',  nat:'ગુજરાતી',  flag:'🇮🇳',region:'Gujarat',       rtl:false,loc:'gu-IN'},
+  {id:'pa',name:'Punjabi',   nat:'ਪੰਜਾਬੀ',   flag:'🇮🇳',region:'Punjab',        rtl:false,loc:'pa-IN'},
+  {id:'ar',name:'Arabic',    nat:'العربية',  flag:'🇸🇦',region:'Middle East',   rtl:true, loc:'ar-SA'},
+  {id:'ur',name:'Urdu',      nat:'اردو',     flag:'🇵🇰',region:'Pakistan',      rtl:true, loc:'ur-PK'},
+  {id:'zh',name:'Chinese',   nat:'中文',      flag:'🇨🇳',region:'China',         rtl:false,loc:'zh-CN'},
+  {id:'ja',name:'Japanese',  nat:'日本語',    flag:'🇯🇵',region:'Japan',         rtl:false,loc:'ja-JP'},
+  {id:'ko',name:'Korean',    nat:'한국어',    flag:'🇰🇷',region:'Korea',         rtl:false,loc:'ko-KR'},
+  {id:'fr',name:'French',    nat:'Français', flag:'🇫🇷',region:'France',        rtl:false,loc:'fr-FR'},
+  {id:'es',name:'Spanish',   nat:'Español',  flag:'🇪🇸',region:'Latin America', rtl:false,loc:'es-ES'},
+  {id:'de',name:'German',    nat:'Deutsch',  flag:'🇩🇪',region:'Germany',       rtl:false,loc:'de-DE'},
+  {id:'pt',name:'Portuguese',nat:'Português',flag:'🇧🇷',region:'Brazil',        rtl:false,loc:'pt-BR'},
+  {id:'ru',name:'Russian',   nat:'Русский',  flag:'🇷🇺',region:'Russia',        rtl:false,loc:'ru-RU'},
+  {id:'id',name:'Indonesian',nat:'Bahasa',   flag:'🇮🇩',region:'Indonesia',     rtl:false,loc:'id-ID'},
+  {id:'th',name:'Thai',      nat:'ภาษาไทย', flag:'🇹🇭',region:'Thailand',      rtl:false,loc:'th-TH'},
+];
+
+const SITS=[
+  {id:'laundry',   icon:'👕',t:'Laundry / Ironing',   s:'Ironman / Dhobi',     ctx:'I have clothes for ironing. Please discuss the number of items, rate per piece, pickup date and delivery time.'},
+  {id:'transport', icon:'🚌',t:'Transport / Bus',      s:'Driver or Conductor', ctx:'I am travelling by bus/auto/cab. Help me communicate my destination, which stop to get off, and ask about the fare.'},
+  {id:'market',    icon:'🥬',t:'Vegetable Market',     s:'Vendor / Shopkeeper', ctx:'I want to buy vegetables. Help me ask prices, quantities, and bargain for a good deal.'},
+  {id:'tailor',    icon:'✂️',t:'Tailor / Stitching',   s:'Tailor Shop',         ctx:'I need clothes stitched or altered. Help me discuss size, style, fabric, price and delivery date.'},
+  {id:'plumber',   icon:'🔧',t:'Repair / Plumber',     s:'Technician / Worker', ctx:'I have a repair job at home. Help me explain the problem and ask for a quote and schedule.'},
+  {id:'doctor',    icon:'🏥',t:'Doctor / Clinic',      s:'Medical Staff',       ctx:'I need to explain my health symptoms and understand what the doctor or nurse is saying.'},
+  {id:'restaurant',icon:'🍽️',t:'Restaurant / Dhaba',  s:'Waiter or Cook',      ctx:'I want to order food, ask about dishes, request customisation, and ask for the bill.'},
+  {id:'grocery',   icon:'🛒',t:'Grocery / Kirana',     s:'Shop owner',          ctx:'I want to buy household groceries. Help me ask prices and check for availability.'},
+  {id:'pharmacy',  icon:'💊',t:'Pharmacy / Medical',   s:'Pharmacist',          ctx:'I need to buy medicine. Help me describe what I need or show the prescription details.'},
+  {id:'landlord',  icon:'🏠',t:'House / Landlord',     s:'Landlord or Broker',  ctx:'I am looking to rent or discuss house maintenance. Help me communicate terms and requests.'},
+  {id:'custom',    icon:'✏️',t:'Custom / Other',       s:'Your situation',      ctx:''},
+];
+
+// ════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════
+const S={
+  gkey:'',ckey:'',
+  appMode:'task',
+  userName:'Rajan',localName:'',
+  taskLang:LANGS[2],taskSit:SITS[0],ctx:'',chatMode:'A',
+  ffLangA:LANGS[1],ffLangB:LANGS[2],
+  ffNameA:'',ffNameB:'',ffAudioMode:true,
+  history:[],busy:false,
+  quotaUsed:0,QUOTA:1000,
+  micRec:null,micOn:false,
+  ffMicState:{A:'idle',B:'idle'},
+};
+
+function loadQ(){const t=new Date().toDateString();const sv=JSON.parse(localStorage.getItem('sl_q')||'{}');S.quotaUsed=(sv.date===t)?(sv.used||0):0;saveQ();updQUI();}
+function saveQ(){try{localStorage.setItem('sl_q',JSON.stringify({date:new Date().toDateString(),used:S.quotaUsed}));}catch(e){}}
+function bumpQ(){S.quotaUsed++;saveQ();updQUI();}
+function updQUI(){
+  const p=Math.min(100,(S.quotaUsed/S.QUOTA)*100);
+  const f=document.getElementById('qbfl');if(f){f.style.width=p+'%';f.className='qbfl'+(p>90?' over':p>70?' warn':'');}
+  const c=document.getElementById('qbc');if(c)c.textContent=S.quotaUsed+' / '+S.QUOTA;
+  ['asq','ff-asq'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=S.quotaUsed+'/1000';});
+}
+function prov(){
+  if(S.gkey&&S.quotaUsed<S.QUOTA)return'gemini';
+  if(S.ckey&&document.getElementById('tog-fb')?.checked)return'claude';
+  return'none';
+}
+function updStrip(){
+  const p=prov();
+  ['asdot','ff-asdot'].forEach(id=>{const el=document.getElementById(id);if(el)el.className='asdot '+(p==='gemini'?'free':p==='claude'?'paid':'err');});
+  ['aslbl','ff-aslbl'].forEach(id=>{const el=document.getElementById(id);if(!el)return;
+    if(p==='gemini')el.textContent='✨ Gemini Free — '+(S.QUOTA-S.quotaUsed)+' requests left today';
+    else if(p==='claude')el.textContent='⚡ Quota reached — using Claude (paid)';
+    else el.textContent='⚠ No API — go back to add a key';
+  });
+  updQUI();
+}
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+(function init(){
+  // Detect if voice is supported — update mic buttons accordingly
+  if(!(window.SpeechRecognition||window.webkitSpeechRecognition)){
+    // Change all mic button labels to "Tap to type"
+    document.querySelectorAll('.ff-mic-label strong').forEach(el=>{
+      if(el.id==='fpa-mic-lbl'||el.id==='fpb-mic-lbl') el.textContent='Tap to type';
+    });
+  }
+  const lg=document.getElementById('lang-grid');
+  LANGS.forEach((l,i)=>{
+    const d=document.createElement('div');
+    d.className='lc'+(i===2?' sel':'');d.id='lc-'+l.id;
+    d.innerHTML=`<div class="lcf">${l.flag}</div><div class="lcn">${l.name}</div><div class="lcnat">${l.nat}</div><div class="lcrg">${l.region}</div>`;
+    d.onclick=()=>pickTL(l);lg.appendChild(d);
+  });
+  const sg=document.getElementById('sit-grid');
+  SITS.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='sc'+(i===0?' sel':'');d.id='sc-'+s.id;
+    d.innerHTML=`<div class="sci">${s.icon}</div><div class="sc-t">${s.t}</div><div class="sc-s">${s.s}</div>`;
+    d.onclick=()=>pickSit(s);sg.appendChild(d);
+  });
+  document.getElementById('ctx').value=SITS[0].ctx;
+  ['ffa-lang','ffb-lang'].forEach((selId,idx)=>{
+    const el=document.getElementById(selId);
+    LANGS.forEach(l=>{
+      const o=document.createElement('option');
+      o.value=l.id;o.textContent=l.flag+' '+l.name+' — '+l.nat;
+      if((idx===0&&l.id==='hi')||(idx===1&&l.id==='ta'))o.selected=true;
+      el.appendChild(o);
+    });
+  });
+  const gk=sessionStorage.getItem('sl_gk'),ck=sessionStorage.getItem('sl_ck');
+  if(gk)document.getElementById('gkey').value=gk;
+  if(ck){document.getElementById('ckey').value=ck;showPaid();}
+  loadQ();
+  if(window.speechSynthesis){
+    window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+    window.speechSynthesis.getVoices();
+  }
+})();
+
+// ════════════════════════════════════════
+//  SCREEN NAV
+// ════════════════════════════════════════
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('fhelp').style.display=(id==='s2'||id==='s3')?'block':'none';
+  if(id==='s2'||id==='s3')updStrip();
+}
+
+function showPaid(){
+  if(document.getElementById('paid-sec').style.display==='block')return;
+  document.getElementById('paid-sec').style.display='block';
+  document.getElementById('tgl-p').style.display='none';
+}
+
+// ════════════════════════════════════════
+//  MODE & PICKS
+// ════════════════════════════════════════
+function pickMode(m){
+  S.appMode=m;
+  document.getElementById('mc-task').className='mc'+(m==='task'?' sel-task':'');
+  document.getElementById('mc-ff').className='mc'+(m==='ff'?' sel-ff':'');
+  document.getElementById('ff-cfg').style.display=m==='ff'?'block':'none';
+  document.getElementById('task-cfg').style.display=m==='task'?'block':'none';
+  document.getElementById('startbtn').textContent=m==='ff'?'Start FreeFlow →':'Start talking →';
+  document.getElementById('startbtn').className=m==='ff'?'btn btn-pu':'btn btn-b';
+}
+function pickTL(l){S.taskLang=l;document.querySelectorAll('.lc').forEach(c=>c.classList.remove('sel'));document.getElementById('lc-'+l.id).classList.add('sel');}
+function pickSit(s){S.taskSit=s;document.querySelectorAll('.sc').forEach(c=>c.classList.remove('sel'));document.getElementById('sc-'+s.id).classList.add('sel');if(s.ctx)document.getElementById('ctx').value=s.ctx;}
+
+// ════════════════════════════════════════
+//  GOTO S1
+// ════════════════════════════════════════
+function gotoS1(){
+  const gk=document.getElementById('gkey').value.trim();
+  const ck=document.getElementById('ckey').value.trim();
+  if(!gk&&!ck){alert('Please enter a free Gemini API key.\n\nGet one free at:\naistudio.google.com/app/apikey');return;}
+  S.gkey=gk;S.ckey=ck;
+  S.userName=document.getElementById('s0nm').value.trim()||'You';
+  if(gk)sessionStorage.setItem('sl_gk',gk);
+  if(ck)sessionStorage.setItem('sl_ck',ck);
+  const dot=document.getElementById('adot'),lbl=document.getElementById('adot-tx');
+  if(gk){dot.className='adot';lbl.textContent='Gemini Free';}else{dot.className='adot am';lbl.textContent='Claude Paid';}
+  document.getElementById('s1na').value=S.userName;
+  document.getElementById('ffa-nm').value=S.userName;
+  show('s1');
+}
+
+// ════════════════════════════════════════
+//  START SESSION
+// ════════════════════════════════════════
+function startSession(){
+  S.ffAudioMode=document.getElementById('ff-audio-tog')?.checked!==false;
+  showMicBannerIfNeeded();
+  if(S.appMode==='ff'){
+    const la=LANGS.find(l=>l.id===document.getElementById('ffa-lang').value)||LANGS[1];
+    const lb=LANGS.find(l=>l.id===document.getElementById('ffb-lang').value)||LANGS[2];
+    S.ffLangA=la;S.ffLangB=lb;
+    S.ffNameA=document.getElementById('ffa-nm').value.trim()||'Person A';
+    S.ffNameB=document.getElementById('ffb-nm').value.trim()||'Person B';
+    S.history=[];
+    initFFScreen();
+    show('s3');
+  } else {
+    S.userName=document.getElementById('s1na').value.trim()||S.userName;
+    S.localName=document.getElementById('s1nb').value.trim()||S.taskLang.name+' person';
+    S.ctx=document.getElementById('ctx').value.trim();
+    S.history=[];S.chatMode='A';
+    initTaskScreen();
+    show('s2');
+    aiGreetTask();
+  }
+  updStrip();
+}
+
+// ════════════════════════════════════════
+//  TASK SCREEN
+// ════════════════════════════════════════
+function initTaskScreen(){
+  document.getElementById('cnt').textContent=S.taskSit.icon+' '+S.taskSit.t;
+  document.getElementById('cns').textContent=S.taskLang.flag+' '+S.taskLang.name+' · '+S.userName+' ↔ '+S.localName;
+  document.getElementById('cpf').textContent=S.taskLang.flag;
+  document.getElementById('cpn').textContent=S.taskLang.name;
+  document.getElementById('msgs').innerHTML='';
+  const sprow=document.getElementById('sprow');
+  sprow.innerHTML=`
+    <button class="spbtn on-a" id="sp-a" onclick="setMode('A')"><span class="spdot"></span>${S.userName} (you)</button>
+    <button class="spbtn" id="sp-b" onclick="setMode('B')"><span class="spdot"></span>${S.localName}</button>`;
+  document.getElementById('ihint').textContent='Tap "'+S.localName+'" to switch to their turn';
+}
+function setMode(m){
+  S.chatMode=m;
+  document.getElementById('sp-a').className='spbtn'+(m==='A'?' on-a':'');
+  document.getElementById('sp-b').className='spbtn'+(m==='B'?' on-b':'');
+  const ta=document.getElementById('chat-ta');
+  ta.className='chat-ta'+(m==='B'?' mb':'');
+  ta.placeholder=m==='A'?'Type in English…':'Type in '+S.taskLang.name+' or use mic…';
+  document.getElementById('ihint').textContent=m==='A'?'Switch to "'+S.localName+'" when handing phone':'Switch back to "'+S.userName+'" after receiving';
+}
+
+// ════════════════════════════════════════
+//  FREEFLOW SCREEN
+// ════════════════════════════════════════
+function initFFScreen(){
+  document.getElementById('ff-cnt').textContent=S.ffNameA+' ⇄ '+S.ffNameB;
+  document.getElementById('ff-cns').textContent=S.ffLangA.flag+' '+S.ffLangA.name+' ↔ '+S.ffLangB.flag+' '+S.ffLangB.name;
+  document.getElementById('fpa-flag').textContent=S.ffLangA.flag;
+  document.getElementById('fpa-name').textContent=S.ffNameA;
+  document.getElementById('fpa-lang').textContent='('+S.ffLangA.name+')';
+  document.getElementById('fpa-lang-hint').textContent=S.ffLangA.name;
+  document.getElementById('fpb-flag').textContent=S.ffLangB.flag;
+  document.getElementById('fpb-name').textContent=S.ffNameB;
+  document.getElementById('fpb-lang').textContent='('+S.ffLangB.name+')';
+  document.getElementById('fpb-lang-hint').textContent=S.ffLangB.name;
+  document.getElementById('fpa-msgs').innerHTML='';
+  document.getElementById('fpb-msgs').innerHTML='';
+  S.ffMicState={A:'idle',B:'idle'};
+  const hasSR=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+  ffAddSysMsg(hasSR
+    ? (S.ffAudioMode?'🎤 Tap your mic button, speak, then pass the phone':'💬 Type in your language — they will see it translated')
+    : '💬 Voice not available in this browser — use the text box below each person to type');
+  // Update mic button labels if no voice support
+  if(!hasSR){
+    ['fpa-mic-lbl','fpb-mic-lbl'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.textContent='Tap to open keyboard';
+    });
+    ['fpa-mic-sub','fpb-mic-sub'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.textContent='Type your message below';
+    });
+    // Make mic buttons look like keyboard buttons
+    ['ff-mic-a','ff-mic-b'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal)"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 8h.01M12 8h.01M16 8h.01M8 12h.01M12 12h.01M16 12h.01M8 16h4"/></svg>';
+    });
+  }
+}
+
+function setFFMicState(person,state){
+  S.ffMicState[person]=state;
+  const btnId=person==='A'?'ff-mic-a':'ff-mic-b';
+  const lbl=document.getElementById(person==='A'?'fpa-mic-lbl':'fpb-mic-lbl');
+  const sts=document.getElementById(person==='A'?'fpa-status':'fpb-status');
+  const btn=document.getElementById(btnId);
+  if(!btn)return;
+  btn.className='ff-mic '+state;
+  if(state==='idle'){lbl.textContent='Tap to speak';if(sts)sts.textContent='';}
+  else if(state==='listening'){lbl.textContent='🔴 Listening…';if(sts)sts.textContent='Speak now';}
+  else if(state==='processing'){lbl.textContent='⏳ Translating…';if(sts)sts.textContent='Please wait';}
+  else if(state==='speaking'){lbl.textContent='🔊 Playing…';if(sts)sts.textContent='Listen';}
+}
+
+function ffMicTap(person){
+  if(S.ffMicState[person]==='listening'){stopFFMic(person);return;}
+  if(S.busy){ffAddSysMsg('Please wait for the translation to finish…');return;}
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    // No voice support — focus the text box automatically
+    const taId=person==='A'?'fpa-ta':'fpb-ta';
+    const ta=document.getElementById(taId);
+    if(ta){ta.focus();ta.placeholder='Type here and tap send →';}
+    // Show one-time tip
+    if(!S._noVoiceTipShown){
+      S._noVoiceTipShown=true;
+      ffAddSysMsg('💬 Voice not supported in this browser — type your message below and tap ➤');
+    }
+    return;
+  }
+  startSRFF(person);
+}
+
+function startSRFF(person){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const lang=person==='A'?S.ffLangA:S.ffLangB;
+  const rec=new SR();
+  rec.lang=lang.loc; rec.interimResults=false; rec.maxAlternatives=1;
+  rec.onstart=()=>setFFMicState(person,'listening');
+  rec.onresult=e=>{
+    const text=e.results[0][0].transcript.trim();
+    if(text) ffProcess(person,text);
+    else{ setFFMicState(person,'idle'); ffAddSysMsg('No speech detected. Try again.'); }
+  };
+  rec.onerror=e=>{
+    setFFMicState(person,'idle');
+    if(e.error==='not-allowed') alert('Microphone blocked. Click lock icon → Allow → refresh.');
+    else if(e.error==='no-speech') ffAddSysMsg('No speech heard. Try again.');
+    else ffAddSysMsg('Mic error: '+e.error+'. Use text box instead.');
+  };
+  rec.onend=()=>{ if(S.ffMicState[person]==='listening') setFFMicState(person,'idle'); };
+  S.micRec=rec; rec.start();
+}
+function stopFFMic(person){if(S.micRec)S.micRec.stop();setFFMicState(person,'idle');}
+function ffSendText(person){
+  const ta=document.getElementById(person==='A'?'fpa-ta':'fpb-ta');
+  const text=ta.value.trim();if(!text)return;
+  ta.value='';grow(ta);ffProcess(person,text);
+}
+async function ffProcess(person,spokenText){
+  if(S.busy)return;
+  const speakerLang=person==='A'?S.ffLangA:S.ffLangB;
+  const listenerLang=person==='A'?S.ffLangB:S.ffLangA;
+  const speakerName=person==='A'?S.ffNameA:S.ffNameB;
+  const listenerName=person==='A'?S.ffNameB:S.ffNameA;
+  const speakerMsgs=document.getElementById(person==='A'?'fpa-msgs':'fpb-msgs');
+  const listenerMsgs=document.getElementById(person==='A'?'fpb-msgs':'fpa-msgs');
+  addFFMsg(speakerMsgs,'mine',spokenText,null);
+  setFFMicState(person,'processing');S.busy=true;
+  const sysText=`You are SpeakLocal, a pure translation engine.
+${speakerName} speaks ${speakerLang.name}. ${listenerName} speaks ${listenerLang.name}.
+RULES: Translate ONLY. Preserve tone, emotion, humour, slang. No explanations. No additions.
+${listenerLang.rtl?'Use Arabic/Nastaliq script, right-to-left.':'Use correct native script.'}`;
+  const prompt=`${speakerName} said in ${speakerLang.name}: "${spokenText}"
+Translate this into ${listenerLang.name} for ${listenerName}. Respond with ONLY the translation.`;
+  const messages=[{role:'user',content:prompt}];
+  const p=prov();
+  let translation=null;
+  if(p==='none'){setFFMicState(person,'idle');S.busy=false;ffAddSysMsg('⚠ No API key. Go back to setup.');return;}
+  if(p==='gemini'){translation=await callGemini(messages,sysText);if(translation)bumpQ();}
+  else translation=await callClaude(messages,sysText);
+  S.busy=false;updStrip();
+  if(!translation){
+    setFFMicState(person,'idle');
+    ffAddSysMsg('⚠ Translation failed — check API key or internet connection');
+    return;
+  }
+  const showOrig=document.getElementById('tog-orig')?.checked;
+  addFFMsg(listenerMsgs,'theirs',translation,showOrig?spokenText:null,listenerLang);
+  setFFMicState(person,'idle');
+}
+
+// ════════════════════════════════════════
+//  TTS
+// ════════════════════════════════════════
+function speakText(text,lang){
+  return new Promise(resolve=>{
+    if(!window.speechSynthesis){resolve();return;}
+    window.speechSynthesis.cancel();
+    const utt=new SpeechSynthesisUtterance(text);
+    utt.lang=lang.loc;utt.rate=0.9;utt.pitch=1;utt.volume=1;
+    const voices=window.speechSynthesis.getVoices();
+    const lp=lang.loc.split('-')[0].toLowerCase();
+    const match=voices.find(v=>v.lang.toLowerCase()===lang.loc.toLowerCase())||voices.find(v=>v.lang.toLowerCase().startsWith(lp));
+    if(match)utt.voice=match;
+    const timer=setTimeout(resolve,8000);
+    utt.onend=()=>{clearTimeout(timer);resolve();};
+    utt.onerror=()=>{clearTimeout(timer);resolve();};
+    window.speechSynthesis.speak(utt);
+  });
+}
+
+// ════════════════════════════════════════
+//  TASK CHAT
+// ════════════════════════════════════════
+function sendTask(){
+  const ta=document.getElementById('chat-ta');
+  const text=ta.value.trim();if(!text||S.busy)return;
+  ta.value='';grow(ta);
+  if(S.chatMode==='A'){
+    addBubble('a',S.userName,text,null,false);
+    S.history.push({role:'user',content:`[${S.userName} (English)]: ${text}`});
+    callAI(promptTaskA(text),sysTask());
+  }else{
+    addBubble('b',S.localName,text,null,S.taskLang.rtl);
+    S.history.push({role:'user',content:`[${S.localName} (${S.taskLang.name})]: ${text}`});
+    callAI(promptTaskB(text),sysTask());
+  }
+}
+function sysTask(){
+  return 'You are SpeakLocal, a translation assistant.\n'
+    +'STRICT RULES — always respond using ONLY these labelled lines, nothing else:\n'
+    +'  TRANS_XX: the translation in the target language\n'
+    +'  FOR_USER: English explanation for '+S.userName+'\n'
+    +'  REPLY_XX: your reply in the target language\n'
+    +'  ESCALATE: question in English if you cannot answer\n'
+    +'Never add extra commentary. Use correct native script. Be natural and concise.\n'
+    +'Context — Situation: '+S.taskSit.t+'. Briefing: '+(S.ctx||'none')+'.';
+}
+function promptTaskA(text){
+  const L=S.taskLang.id.toUpperCase();
+  return S.userName+' says: "'+text+'"\n'
+    +'Translate this into '+S.taskLang.name+' for '+S.localName+'.\n'
+    +'TRANS_'+L+': <your '+S.taskLang.name+' translation here>';}
+
+function promptTaskB(text){
+  const L=S.taskLang.id.toUpperCase();
+  const ai=document.getElementById('tog-ai')?.checked;
+  const esc=document.getElementById('tog-esc')?.checked;
+  return S.localName+' said in '+S.taskLang.name+': "'+text+'"\n'
+    +'Step 1 — translate to English for '+S.userName+':\n'
+    +'FOR_USER: <English translation>\n'
+    +'Step 2 — '+( ai
+      ? 'reply in '+S.taskLang.name+' based on briefing: "'+S.ctx+'". If unknown, use ESCALATE.\n'
+        +'REPLY_'+L+': <'+S.taskLang.name+' reply>\n'
+        +(esc?'ESCALATE: <English question for '+S.userName+' if needed>':''  )
+      : '(translation only, no reply needed)'
+    );
+}
+function aiGreetTask(){
+  callAI(`Greet ${S.localName} warmly in ${S.taskLang.name}. Keep it to one natural sentence, like you're a helpful assistant for ${S.userName}.
+TRANS_${S.taskLang.id.toUpperCase()}: [greeting]
+ENGREF: [English translation]`,sysTask(),true);}
+
+// ════════════════════════════════════════
+//  AI CORE
+// ════════════════════════════════════════
+async function callAI(prompt,sys,isGreet=false){
+  const p=prov();
+  if(p==='none'){syschip('⚠ No API key. Go back and add a Gemini or Claude key.');return;}
+  S.busy=true;
+  const box=document.getElementById('msgs');
+  const loader=mkDots();box.appendChild(loader);scrollBot();
+  const msgs=[...S.history.slice(-12),{role:'user',content:prompt}];
+  let reply=null;
+  if(p==='gemini'){reply=await callGemini(msgs,sys);if(reply)bumpQ();}
+  else reply=await callClaude(msgs,sys);
+  loader.remove();S.busy=false;updStrip();
+  if(reply){S.history.push({role:'assistant',content:reply});parseTaskReply(reply);}
+}
+async function callGemini(msgs,sys){
+  // Build contents — system prompt as first turn, works on ALL models
+  const sysMsg={role:'user',parts:[{text:'Instructions: '+sys}]};
+  const sysAck={role:'model',parts:[{text:'Understood.'}]};
+  const contents=[sysMsg,sysAck,...msgs.map(m=>({
+    role:m.role==='assistant'?'model':'user',
+    parts:[{text:m.content}]
+  }))];
+  const reqBody=JSON.stringify({contents,generationConfig:{maxOutputTokens:600,temperature:0.3}});
+
+  // If we already found a working model, use it directly
+  if(S._workingModel){
+    const r=await _geminiCall(S._workingModel,reqBody);
+    if(r&&r.ok) return r.text;
+    S._workingModel=null; // reset and retry all
+  }
+
+  // Check if user tested key and we know the model
+  const savedModel=sessionStorage.getItem('sl_model');
+  if(savedModel&&!S._workingModel){
+    const r=await _geminiCall(savedModel,reqBody);
+    if(r&&r.ok){S._workingModel=savedModel;return r.text;}
+  }
+
+  // Auto-discover: fetch model list from API, then try each
+  let models=['gemini-2.5-flash','gemini-2.0-flash','gemini-2.0-flash-lite','gemini-2.0-flash-001','gemini-flash-latest','gemini-2.5-flash-lite'];
+  try{
+    const lr=await fetch('https://generativelanguage.googleapis.com/v1beta/models?key='+S.gkey);
+    const ld=await lr.json();
+    if(ld.models){
+      const discovered=ld.models
+        .filter(m=>m.supportedGenerationMethods&&m.supportedGenerationMethods.includes('generateContent'))
+        .map(m=>m.name.replace('models/',''))
+        .filter(n=>n.includes('flash')||n.includes('pro')||n.includes('gemini'));
+      if(discovered.length) models=discovered;
+    }
+  }catch(e){}
+
+  let lastErr='not found';
+  for(const model of models){
+    const r=await _geminiCall(model,reqBody);
+    if(r&&r.ok){S._workingModel=model;return r.text;}
+    if(r&&r.quota){
+      if(S.ckey&&document.getElementById('tog-fb')?.checked){
+        S.quotaUsed=S.QUOTA;saveQ();
+        syschip('\u26a1 Gemini quota reached \u2014 using Claude fallback');
+        return await callClaude(msgs,sys);
+      }
+    }
+    if(r) lastErr=r.err;
+  }
+  if(lastErr.toLowerCase().includes('quota')){showQuotaError();}
+  else{syschip('\u26a0 Gemini error: '+lastErr);}
+  return null;
+}
+
+async function _geminiCall(model,bodyStr){
+  try{
+    const res=await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+S.gkey,
+      {method:'POST',headers:{'Content-Type':'application/json'},body:bodyStr});
+    const data=await res.json();
+    if(data.error){
+      const code=data.error.code, status=data.error.status||'';
+      if(code===404||status==='NOT_FOUND') return {ok:false,err:'not found'};
+      if(code===429||status==='RESOURCE_EXHAUSTED') return {ok:false,quota:true,err:'quota'};
+      return {ok:false,err:data.error.message||'error'};
+    }
+    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||null;
+    if(!text) return {ok:false,err:'empty response'};
+    return {ok:true,text};
+  }catch(e){return {ok:false,err:'network error'};}
+}
+
+function showQuotaError(){
+  const msg='⚠ Gemini daily quota reached. Options:\n'
+    +'1. Get a fresh free API key at aistudio.google.com/app/apikey\n'
+    +'2. Add a Claude API key\n'
+    +'3. Wait until tomorrow (quota resets daily)';
+  syschip('⚠ Gemini quota reached for today. Tap ⚙ Settings to enter a new API key.');
+  // Also show a dismissable banner
+  const existing=document.getElementById('quota-banner');
+  if(existing) return;
+  const b=document.createElement('div');
+  b.id='quota-banner';
+  b.style.cssText='position:fixed;bottom:70px;left:10px;right:10px;z-index:999;'
+    +'background:#7c2d12;border:1px solid #f97316;border-radius:12px;'
+    +'padding:12px 14px;font-family:Sora,sans-serif;font-size:12.5px;color:#fff;'
+    +'box-shadow:0 4px 20px rgba(0,0,0,.4)';
+  b.innerHTML=`<div style="font-weight:700;margin-bottom:6px">⚠ Gemini quota reached for today</div>
+    <div style="opacity:.85;margin-bottom:10px">Get a free new API key (takes 1 min):</div>
+    <a href="https://aistudio.google.com/app/apikey" target="_blank"
+       style="display:block;background:#f97316;border-radius:8px;padding:8px 12px;
+              text-align:center;font-weight:700;color:#fff;text-decoration:none;margin-bottom:8px">
+       🔑 Get new free API key →
+    </a>
+    <div style="opacity:.7;font-size:11px">Or add a Claude API key in Settings · Quota resets tomorrow</div>
+    <button onclick="this.parentNode.remove()"
+       style="position:absolute;top:8px;right:10px;background:none;border:none;
+              color:#fff;font-size:16px;cursor:pointer;opacity:.7">✕</button>`;
+  document.body.appendChild(b);
+}
+async function callClaude(msgs,sys){
+  if(!S.ckey){syschip('⚠ No Claude key. Add in setup.');return null;}
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':S.ckey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:sys,messages:msgs})
+    });
+    const data=await res.json();
+    if(data.error){syschip('⚠ Claude: '+data.error.message);return null;}
+    return data.content?.[0]?.text||null;
+  }catch(e){syschip('⚠ Network error (Claude).');return null;}
+}
+
+// ════════════════════════════════════════
+//  PARSE TASK REPLY
+// ════════════════════════════════════════
+function parseTaskReply(reply){
+  const L=S.taskLang.id.toUpperCase();
+  const tm=reply.match(new RegExp('TRANS_'+L+':\\s*([\\s\\S]+?)(?=ENGREF:|FOR_USER:|REPLY_'+L+':|ESCALATE:|$)','i'));
+  const er=reply.match(/ENGREF:\s*(.+)/i);
+  const fu=reply.match(/FOR_USER:\s*([\s\S]+?)(?=REPLY_|ESCALATE:|$)/i);
+  const rl=reply.match(new RegExp('REPLY_'+L+':\\s*([\\s\\S]+?)(?=ESCALATE:|$)','i'));
+  const es=reply.match(/ESCALATE:\s*(.+)/i);
+
+  let spokeSomething=false;
+
+  // Translation for local person — add speak button + auto-play
+  if(tm){
+    const t=tm[1].trim();
+    const btnId=addBubble('bot','SpeakLocal → '+S.localName,t,er?er[1].trim():null,S.taskLang.rtl,S.taskLang);
+    scheduleSpeak(btnId);
+    spokeSomething=true;
+  }
+  // English translation back to user A — no speak button needed (they read English)
+  if(fu){
+    addBubble('bot','SpeakLocal → '+S.userName,fu[1].trim(),null,false,null);
+    spokeSomething=true;
+  }
+  // AI reply to local person — add speak button + auto-play
+  if(rl){
+    const t=rl[1].trim();
+    const btnId2=addBubble('bot','SpeakLocal → '+S.localName,t,null,S.taskLang.rtl,S.taskLang);
+    scheduleSpeak(btnId2);
+    spokeSomething=true;
+  }
+  // Escalation
+  if(es&&document.getElementById('tog-esc')?.checked) showEsc(es[1].trim());
+
+  // Fallback — AI didn't follow format at all. Show raw reply.
+  // Try to detect language: if it looks non-English, attach speak button for local lang
+  if(!spokeSomething){
+    const looksLocal=reply.trim().split('').some(ch=>ch.charCodeAt(0)>127);
+    const lang=looksLocal?S.taskLang:null;
+    const btnId3=addBubble('bot','SpeakLocal',reply.trim(),null,looksLocal&&S.taskLang.rtl,lang);
+    if(looksLocal) scheduleSpeak(btnId3);
+  }
+}
+
+// ════════════════════════════════════════
+//  DOM HELPERS
+// ════════════════════════════════════════
+// Store speak data safely — no inline string passing
+
+function addBubble(type,sender,text,note,rtl,speakLang){
+  const box=document.getElementById('msgs');
+  const wrap=document.createElement('div');
+  wrap.className='mw '+(type==='a'?'r':'l');
+
+  // sender label
+  const snd=document.createElement('div');
+  snd.className='msnd';snd.textContent=sender;
+  wrap.appendChild(snd);
+
+  // main bubble
+  const bbl=document.createElement('div');
+  bbl.className='bbl '+type+(rtl?' rtl':'');
+  bbl.innerHTML=e2(text);
+  wrap.appendChild(bbl);
+
+  // optional english note
+  if(note){const n=document.createElement('div');n.className='bbl-note';n.textContent=note;wrap.appendChild(n);}
+
+  // speak button — only for bot→localName bubbles
+  let btnId=null;
+  if(type==='bot'&&speakLang){
+    btnId='spk'+Date.now()+Math.random().toString(36).slice(2,7);
+    _bubbleData[btnId]={text,lang:speakLang};
+    const btn=document.createElement('button');
+    btn.className='spk-btn';
+    btn.id=btnId;
+    btn.textContent='🔊 Tap to hear in '+speakLang.name;
+    btn.addEventListener('click',function(){tapSpeak(this);});
+    wrap.appendChild(btn);
+  }
+
+  box.appendChild(wrap);scrollBot();
+  return btnId;
+}
+function addFFMsg(container,cls,text,orig,speakLang){
+  const wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(cls==='mine'?'flex-end':'flex-start');
+  const d=document.createElement('div');
+  d.className='ff-msg '+cls;
+  d.innerHTML=e2(text)+(orig?`<span class="ff-orig">${e2(orig)}</span>`:'');
+  wrap.appendChild(d);
+  // Speak button on translated messages (theirs = translation for listener)
+  if(cls==='theirs'&&speakLang){
+    const btnId='spk'+Date.now()+Math.random().toString(36).slice(2,7);
+    _bubbleData[btnId]={text,lang:speakLang};
+    const btn=document.createElement('button');
+    btn.className='spk-btn';
+    btn.id=btnId;
+    btn.textContent='🔊 Tap to hear in '+speakLang.name;
+    btn.style.marginTop='4px';
+    btn.addEventListener('click',function(){tapSpeak(this);});
+    wrap.appendChild(btn);
+    container.appendChild(wrap);
+    container.scrollTop=container.scrollHeight;
+    scheduleSpeak(btnId);
+    return;
+  }
+  container.appendChild(wrap);
+  container.scrollTop=container.scrollHeight;
+}
+function ffAddSysMsg(t){
+  const isErr=t.startsWith('⚠')||t.startsWith('❌');
+  const isWarn=t.startsWith('⚡')||t.startsWith('🔑');
+  ['fpa-msgs','fpb-msgs'].forEach(id=>{
+    const box=document.getElementById(id);if(!box)return;
+    const d=document.createElement('div');
+    if(isErr){
+      d.style.cssText='align-self:center;font-size:13px;font-weight:700;color:#fff;'
+        +'background:#7f1d1d;border:2px solid #ef4444;border-radius:10px;'
+        +'padding:10px 16px;text-align:center;max-width:96%;margin:4px 0;'
+        +'box-shadow:0 2px 12px rgba(239,68,68,.5)';
+    } else if(isWarn){
+      d.style.cssText='align-self:center;font-size:13px;font-weight:600;color:#fff;'
+        +'background:#78350f;border:2px solid #f59e0b;border-radius:10px;'
+        +'padding:10px 16px;text-align:center;max-width:96%;margin:4px 0;'
+        +'box-shadow:0 2px 12px rgba(245,158,11,.4)';
+    } else {
+      d.style.cssText='align-self:center;font-size:11px;color:var(--tx2);'
+        +'background:var(--bg2);border:1px solid var(--bdr);border-radius:20px;'
+        +'padding:4px 10px;text-align:center;max-width:95%;margin:2px 0';
+    }
+    d.textContent=t;box.appendChild(d);box.scrollTop=box.scrollHeight;
+  });
+}
+function syschip(t){
+  const isErr=t.startsWith('⚠')||t.startsWith('❌');
+  const isWarn=t.startsWith('⚡')||t.startsWith('🔑');
+  const cls='sys-chip'+(isErr?' error':isWarn?' warn':' info');
+  const box=document.getElementById('msgs');
+  if(box){
+    const d=document.createElement('div');
+    d.className=cls;
+    d.textContent=t;
+    box.appendChild(d);scrollBot();
+  }
+  // Also show in FreeFlow panels if active
+  const s3=document.getElementById('s3');
+  if(s3&&s3.classList.contains('active')) ffAddSysMsg(t);
+}
+function mkDots(){const d=document.createElement('div');d.className='dots';d.innerHTML='<span></span><span></span><span></span>';return d;}
+function scrollBot(){const b=document.getElementById('msgs');if(b)setTimeout(()=>b.scrollTop=b.scrollHeight,40);}
+function grow(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,95)+'px';}
+function e2(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function showEsc(q){
+  const id='esc'+Date.now();const box=document.getElementById('msgs');const div=document.createElement('div');div.className='esc';div.id=id;
+  div.innerHTML=`<div class="esct">⚡ ${S.userName} — clarification needed</div><div class="escq">${S.localName} asked:<br><strong>${e2(q)}</strong></div><input class="esci" id="${id}-i" placeholder="Your answer in English…"><button class="escbtn" onclick="sendEsc('${id}')">Send answer to ${S.localName} →</button>`;
+  box.appendChild(div);scrollBot();
+}
+function sendEsc(id){
+  const inp=document.getElementById(id+'-i');const ans=inp.value.trim();if(!ans)return;
+  document.getElementById(id).remove();
+  addBubble('a',S.userName,ans,null,false);
+  S.history.push({role:'user',content:`[${S.userName} clarifies]: ${ans}`});
+  callAI(`${S.userName} replied: "${ans}". Please translate and communicate this answer to ${S.localName} in ${S.taskLang.name}.\nTRANS_${S.taskLang.id.toUpperCase()}: [reply in ${S.taskLang.name}]`,sysTask());
+}
+
+// ════════════════════════════════════════
+//  MIC PERMISSION BANNER (file:// only)
+// ════════════════════════════════════════
+function showMicBannerIfNeeded(){
+  if(location.protocol!=='file:') return;
+  // On file:// Chrome shows permission popup every single SR start - nothing we can do
+  // Show a one-time banner explaining this to user
+  const seen=sessionStorage.getItem('mic_banner_seen');
+  if(seen) return;
+  sessionStorage.setItem('mic_banner_seen','1');
+  const banner=document.createElement('div');
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#1e3a5f;border-bottom:2px solid #3b82f6;padding:10px 16px;font-family:Sora,sans-serif;font-size:13px;color:#e8eef8;display:flex;align-items:center;gap:10px';
+  banner.innerHTML='<span style="font-size:18px">💡</span><span>When Chrome asks for microphone: tap <strong style="color:#fbbf24">Allow while visiting the site</strong> — so it only asks once, not every time.</span><button onclick="this.parentNode.remove()" style="margin-left:auto;background:none;border:1px solid #3b82f6;color:#93c5fd;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px">Got it</button>';
+  document.body.appendChild(banner);
+  setTimeout(()=>banner.remove(), 12000);
+}
+
+// ════════════════════════════════════════
+//  TASK VOICE MIC
+// ════════════════════════════════════════
+function toggleMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    // No voice — focus text box instead
+    const ta=document.getElementById('chat-ta');
+    if(ta){ta.focus();ta.placeholder='Type here and press Enter to send →';}
+    if(!S._noVoiceTipShown){
+      S._noVoiceTipShown=true;
+      syschip('💬 Voice not supported in this browser — please type your message');
+    }
+    return;
+  }
+  if(S.micOn){ S.micRec?.stop(); return; }
+  startSRTask();
+}
+
+function startSRTask(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const lang=S.chatMode==='B'?S.taskLang.loc:'en-IN';
+  const rec=new SR();
+  rec.lang=lang; rec.interimResults=true; rec.continuous=false; rec.maxAlternatives=1;
+  rec.onstart=()=>{
+    S.micOn=true;
+    document.getElementById('micbtn').classList.add('mic-on');
+    document.getElementById('chat-ta').placeholder='🎤 Listening… speak now';
+  };
+  rec.onresult=e=>{
+    const ta=document.getElementById('chat-ta');
+    let txt=''; for(let i=0;i<e.results.length;i++) txt+=e.results[i][0].transcript;
+    ta.value=txt; grow(ta);
+  };
+  rec.onend=()=>{
+    S.micOn=false; S.micRec=null;
+    document.getElementById('micbtn').classList.remove('mic-on');
+    document.getElementById('chat-ta').placeholder='Type or use mic…';
+  };
+  rec.onerror=e=>{
+    S.micOn=false; S.micRec=null;
+    document.getElementById('micbtn').classList.remove('mic-on');
+    document.getElementById('chat-ta').placeholder='Type or use mic…';
+    if(e.error==='not-allowed'){ alert('Microphone blocked. Click lock icon → Allow → refresh.'); }
+    else if(e.error==='no-speech'){ syschip('No speech heard — speak clearly after tapping mic.'); }
+    else if(e.error==='network'){ syschip('🎤 Voice needs internet.'); }
+    else { syschip('🎤 Mic error: '+e.error); }
+  };
+  S.micRec=rec; rec.start();
+}
+
+// ════════════════════════════════════════
+//  SAVE SESSION (copy to clipboard)
+// ════════════════════════════════════════
+function saveSession(){
+  const msgs=document.getElementById('msgs');
+  if(!msgs)return;
+  const lines=[];
+  msgs.querySelectorAll('.mw').forEach(mw=>{
+    const sender=mw.querySelector('.msnd')?.textContent||'';
+    const text=mw.querySelector('.bbl')?.textContent||'';
+    if(text)lines.push(sender+': '+text);
+  });
+  if(!lines.length){alert('No conversation to save yet.');return;}
+  const txt='SpeakLocal Session — '+new Date().toLocaleString()+'\n\n'+lines.join('\n\n');
+  navigator.clipboard.writeText(txt).then(()=>alert('Conversation copied to clipboard!')).catch(()=>{
+    const blob=new Blob([txt],{type:'text/plain'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='speaklocal-'+Date.now()+'.txt';a.click();
+  });
+}
+
+// ════════════════════════════════════════
+//  GUIDE LANGUAGE SWITCHER
+// ════════════════════════════════════════
+function switchGuide(lang,btn){
+  document.querySelectorAll('.glang-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.glt').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('guide-'+lang).classList.add('active');
+  btn.classList.add('sel');
+}
+
+// ════════════════════════════════════════
+//  UPDATE API KEY IN-SESSION
+// ════════════════════════════════════════
+function updateGeminiKey(){
+  const inp=document.getElementById('new-gkey');
+  const key=inp.value.trim();
+  if(!key){alert('Please paste a Gemini API key first.');return;}
+  if(!key.startsWith('AIza')){alert('That does not look like a Gemini key. It should start with AIza...');return;}
+  S.gkey=key;
+  S.quotaUsed=0; saveQ();
+  sessionStorage.setItem('sl_gk',key);
+  inp.value='';
+  updStrip();
+  // Remove quota banner if showing
+  const b=document.getElementById('quota-banner');if(b)b.remove();
+  closeOv('sov');
+  syschip('✅ New API key saved — ready to translate!');
+}
+
+// ════════════════════════════════════════
+//  TEST API KEY — show available models
+// ════════════════════════════════════════
+async function testAPIKey(){
+  const key=document.getElementById('gkey').value.trim();
+  if(!key){alert('Please paste your Gemini API key first.');return;}
+  const box=document.getElementById('model-list');
+  box.style.display='block';
+  box.innerHTML='⏳ Fetching available models...';
+  try{
+    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models?key='+key);
+    const data=await res.json();
+    if(data.error){box.innerHTML='<span style="color:#f87171">❌ API Error: '+data.error.message+'</span>';return;}
+    const models=(data.models||[])
+      .filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent'))
+      .map(m=>m.name.replace('models/',''));
+    if(!models.length){box.innerHTML='<span style="color:#f87171">❌ No generateContent models found for this key</span>';return;}
+    box.innerHTML='<div style="color:#4ade80;font-weight:700;margin-bottom:6px">✅ '+models.length+' models available:</div>'
+      +models.map(m=>'<div style="font-family:monospace;color:#e8eef8">• '+m+'</div>').join('')
+      +'<div style="margin-top:8px;color:#9aaa90;font-size:11px">Tap Continue → to start using the app</div>';
+    // Auto-set working model to first flash model found
+    const flash=models.find(m=>m.includes('flash'))||models[0];
+    if(flash){
+      // Store for later use
+      sessionStorage.setItem('sl_model', flash);
+    }
+  }catch(e){box.innerHTML='<span style="color:#f87171">❌ Network error: '+e.message+'</span>';}
+}
+
+// ════════════════════════════════════════
+//  OVERLAYS
+// ════════════════════════════════════════
+function openSettings(){document.getElementById('sov').classList.add('open');}
+function closeOv(id){document.getElementById(id).classList.remove('open');}
+function closeOvIf(e,id){if(e.target.id===id)closeOv(id);}
+function openGuide(){document.getElementById('guide').classList.add('open');}
+function closeGuide(){document.getElementById('guide').classList.remove('open');}
+
+// ════════════════════════════════════════
+//  AUTO-SPEAK: 5s countdown then play
+// ════════════════════════════════════════
+
+function scheduleSpeak(btnId){
+  if(!btnId||!_bubbleData[btnId]) return;
+  const DELAY=5;
+  let secsLeft=DELAY;
+  // Small delay to ensure DOM element is fully appended
+  setTimeout(()=>{
+    const btn=document.getElementById(btnId);
+    if(!btn) return;
+    const langName=_bubbleData[btnId].lang.name;
+    btn.textContent='🔊 Auto-playing in '+secsLeft+'s — or tap to hear now';
+    btn.classList.add('countdown');
+    const interval=setInterval(()=>{
+      secsLeft--;
+      const b=document.getElementById(btnId);
+      if(!b){clearInterval(interval);return;}
+      if(secsLeft<=0){
+        clearInterval(interval);
+        delete _speakTimers[btnId];
+        doSpeak(b);
+      } else {
+        b.textContent='🔊 Auto-playing in '+secsLeft+'s — or tap to hear now';
+      }
+    },1000);
+    _speakTimers[btnId]={interval};
+  },50);
+}
+
+function cancelTimer(btnId){
+  if(_speakTimers[btnId]){
+    clearInterval(_speakTimers[btnId].interval);
+    delete _speakTimers[btnId];
+  }
+}
+
+function tapSpeak(btn){
+  const btnId=btn.id;
+  const d=_bubbleData[btnId];
+  if(!d) return;
+  if(_speakTimers[btnId]){cancelTimer(btnId);doSpeak(btn);return;}
+  if(btn.classList.contains('playing')){
+    window.speechSynthesis.cancel();
+    btn.classList.remove('playing');
+    btn.textContent='🔊 Tap to replay in '+d.lang.name;
+    return;
+  }
+  doSpeak(btn);
+}
+
+function doSpeak(btn){
+  const d=_bubbleData[btn.id];
+  if(!d) return;
+  const {text,lang}=d;
+  if(!window.speechSynthesis){showNoVoiceFallback(btn,text,lang);return;}
+  window.speechSynthesis.cancel();
+
+  function _speak(){
+    const voices=window.speechSynthesis.getVoices();
+    const lp=lang.loc.split('-')[0].toLowerCase();
+    const match=voices.find(v=>v.lang.toLowerCase()===lang.loc.toLowerCase())
+               ||voices.find(v=>v.lang.toLowerCase().startsWith(lp));
+
+    // No voice found for this language — show text prominently instead
+    if(!match&&voices.length>0){
+      showNoVoiceFallback(btn,text,lang);
+      return;
+    }
+
+    const utt=new SpeechSynthesisUtterance(text);
+    utt.lang=lang.loc;
+    utt.rate=0.88; utt.pitch=1; utt.volume=1;
+    if(match) utt.voice=match;
+    btn.classList.remove('countdown');
+    btn.classList.add('playing');
+    btn.textContent='⏹ Playing… tap to stop';
+    utt.onend=()=>{
+      btn.classList.remove('playing');
+      btn.textContent='✅ Done · tap to replay in '+lang.name;
+    };
+    utt.onerror=()=>{
+      btn.classList.remove('playing');
+      showNoVoiceFallback(btn,text,lang);
+    };
+    window.speechSynthesis.speak(utt);
+
+    // Safety: if speech doesn't start in 2s, show text fallback
+    setTimeout(()=>{
+      if(btn.classList.contains('playing')&&!btn.classList.contains('done')){
+        window.speechSynthesis.cancel();
+        showNoVoiceFallback(btn,text,lang);
+      }
+    },2000);
+  }
+
+  const voices=window.speechSynthesis.getVoices();
+  if(voices.length>0){
+    _speak();
+  } else {
+    window.speechSynthesis.onvoiceschanged=()=>{window.speechSynthesis.onvoiceschanged=null;_speak();};
+    setTimeout(()=>{
+      if(!btn.classList.contains('playing')) _speak();
+    },800);
+  }
+}
+
+function showNoVoiceFallback(btn,text,lang){
+  // No voice installed for this language — show a big readable text box
+  btn.classList.remove('countdown','playing');
+  btn.textContent='🔊 Tap to try again';
+
+  // Check if fallback already shown
+  const existingId='nv-'+btn.id;
+  if(document.getElementById(existingId)) return;
+
+  const box=document.createElement('div');
+  box.id=existingId;
+  box.style.cssText='margin-top:8px;background:#1e3a5f;border:2px solid #3b82f6;border-radius:12px;'
+    +'padding:14px 16px;max-width:95%';
+  box.innerHTML='<div style="font-size:11px;color:#93c5fd;font-weight:700;margin-bottom:8px">'
+    +'📢 No '+lang.name+' voice on this device — read it:</div>'
+    +'<div style="font-size:18px;line-height:1.6;color:#fff;font-weight:600">'
+    +e2(text)+'</div>'
+    +'<div style="font-size:11px;color:#93c5fd;margin-top:8px">'
+    +'💡 To enable audio: install '+lang.name+' language pack in Windows Settings → Time &amp; Language → Language</div>';
+  btn.parentNode.insertBefore(box, btn.nextSibling);
+}
+</script>
+</body>
+</html>
